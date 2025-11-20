@@ -1,14 +1,32 @@
 // packages/auth/index.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { SupabaseClient, createClient, Session, User } from '@supabase/supabase-js';
-import * as SecureStore from 'expo-secure-store';
+const safeSecureStore = () => {
+  const isReactNative = typeof navigator !== 'undefined' && (navigator as any).product === 'ReactNative';
+  if (!isReactNative) return null;
+  try {
+    return require('expo-secure-store');
+  } catch (e) {
+    return null;
+  }
+};
 
-// A custom token storage adapter for Expo.
-// This allows Supabase to securely store the user's session on the device.
 const ExpoSecureStoreAdapter = {
-  getItem: (key: string) => SecureStore.getItemAsync(key),
-  setItem: (key: string, value: string) => SecureStore.setItemAsync(key, value),
-  removeItem: (key: string) => SecureStore.deleteItemAsync(key),
+  getItem: (key: string) => {
+    const SecureStore = safeSecureStore();
+    if (!SecureStore || !SecureStore.getItemAsync) return Promise.resolve(null);
+    return SecureStore.getItemAsync(key);
+  },
+  setItem: (key: string, value: string) => {
+    const SecureStore = safeSecureStore();
+    if (!SecureStore || !SecureStore.setItemAsync) return Promise.resolve();
+    return SecureStore.setItemAsync(key, value);
+  },
+  removeItem: (key: string) => {
+    const SecureStore = safeSecureStore();
+    if (!SecureStore || !SecureStore.deleteItemAsync) return Promise.resolve();
+    return SecureStore.deleteItemAsync(key);
+  },
 };
 
 // --- CREATE THE SUPABASE CLIENT ---
