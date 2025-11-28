@@ -1,11 +1,20 @@
 // packages/auth/index.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { SupabaseClient, createClient, Session, User } from '@supabase/supabase-js';
-import * as SecureStore from 'expo-secure-store';
+// Avoid importing `expo-secure-store` at module evaluation time because
+// the native module may not be available in the running environment
+// (e.g. plain Node, web, or Expo Go without the module). Require it
+// lazily inside a try/catch so the bundle doesn't crash when the native
+// module is missing.
 const safeSecureStore = () => {
   const isReactNative = typeof navigator !== 'undefined' && (navigator as any).product === 'ReactNative';
   if (!isReactNative) return null;
   try {
+    // Use require so bundlers don't eagerly fail when the native module
+    // isn't present in the runtime. This can still throw if the module
+    // isn't installed — catch and return null in that case.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const SecureStore = require('expo-secure-store');
     return SecureStore;
   } catch (e) {
     return null;
@@ -92,11 +101,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Check for an existing session when the app starts
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-    });
+    // Check for an existing session when the app starts.
+    // Wrap in try/catch to handle cases where a stored refresh token
+    // is invalid on the server (e.g. rotated/removed). If refreshing
+    // fails, sign out to clear local storage and avoid an unhandled
+    // AuthApiError like "Invalid Refresh Token: Refresh Token Not Found".
+    (async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setSession(session);
+        setUser(session?.user ?? null);
+      } catch (err: any) {
+        // If Supabase reports an invalid refresh token, clear local state
+        // and remove any persisted session by signing out.
+        try {
+          // eslint-disable-next-line no-console
+          console.warn('[Auth] getSession failed, signing out to clear invalid tokens', err?.message ?? err);
+          await supabase.auth.signOut();
+        } catch (e) {
+          // ignore signOut errors
+        }
+        setSession(null);
+        setUser(null);
+      }
+    })();
 
     // Listen for changes in authentication state (login, logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
