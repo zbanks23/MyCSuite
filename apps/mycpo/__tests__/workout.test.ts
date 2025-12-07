@@ -3,7 +3,7 @@ import {
     createExercise,
     Exercise,
     reorderSequence,
-} from "./workout.logic";
+} from "../app/(tabs)/workout.logic";
 
 describe("Workout Logic", () => {
     describe("createExercise", () => {
