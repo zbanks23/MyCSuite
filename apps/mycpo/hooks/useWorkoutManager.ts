@@ -10,6 +10,16 @@ export type Exercise = {
     completedSets?: number;
 };
 
+export type WorkoutLog = {
+    id: string; // workout_log_id
+    workoutId?: string;
+    userId: string;
+    workoutTime: string;
+    notes?: string;
+    workoutName?: string; // joined from workouts table
+    createdAt: string;
+};
+
 // --- Helper / API Functions (Outside Hook) ---
 
 async function getOrCreateExercise(user: any, ex: any) {
@@ -57,6 +67,37 @@ async function fetchUserRoutines(user: any) {
         .select("*")
         .order("created_at", { ascending: false });
     return { data, error };
+}
+
+async function fetchWorkoutHistory(user: any) {
+    if (!user) return { data: [], error: null };
+    const { data: logs, error } = await supabase
+        .from("workout_logs")
+        .select(`
+            workout_log_id,
+            workout_id,
+            user_id,
+            workout_time,
+            notes,
+            created_at,
+            workouts ( workout_name )
+        `)
+        .eq("user_id", user.id)
+        .order("workout_time", { ascending: false });
+
+    if (error) return { data: [], error };
+
+    const formatted = logs?.map((log: any) => ({
+        id: log.workout_log_id,
+        workoutId: log.workout_id,
+        userId: log.user_id,
+        workoutTime: log.workout_time,
+        notes: log.notes,
+        workoutName: log.workouts?.workout_name || "Untitled Workout",
+        createdAt: log.created_at,
+    })) || [];
+
+    return { data: formatted, error: null };
 }
 
 async function persistWorkoutToSupabase(
@@ -162,6 +203,7 @@ export function useWorkoutManager() {
     const { user } = useAuth();
     const [savedWorkouts, setSavedWorkouts] = useState<any[]>([]);
     const [routines, setRoutines] = useState<any[]>([]);
+    const [workoutHistory, setWorkoutHistory] = useState<WorkoutLog[]>([]);
     const [isSaving, setIsSaving] = useState(false);
 
     // Load saved routines and saved workouts on mount
@@ -213,6 +255,13 @@ export function useWorkoutManager() {
                             };
                         });
                         setRoutines(mappedRoutines);
+                    }
+
+                    // Fetch history
+                    const { data: hData, error: hError } =
+                        await fetchWorkoutHistory(user);
+                    if (!hError) {
+                        setWorkoutHistory(hData);
                     }
                 } else {
                     if (typeof window !== "undefined" && window.localStorage) {
@@ -418,5 +467,6 @@ export function useWorkoutManager() {
         deleteSavedWorkout,
         saveRoutineDraft,
         deleteRoutine,
+        workoutHistory,
     };
 }

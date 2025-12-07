@@ -3,20 +3,14 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native
 import { Stack, useRouter } from 'expo-router';
 import { useUITheme as useTheme } from '@mycsuite/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { formatSeconds } from '../utils/formatting';
-
-// Mock data for the template
-const MOCK_HISTORY = [
-  { id: '1', date: '2023-10-27T10:00:00Z', name: 'Upper Body Power', duration: 3600, exercises: 5 },
-  { id: '2', date: '2023-10-25T09:30:00Z', name: 'Leg Day', duration: 2700, exercises: 4 },
-  { id: '3', date: '2023-10-23T18:15:00Z', name: 'Full Body HIIT', duration: 1800, exercises: 6 },
-  { id: '4', date: '2023-10-20T07:00:00Z', name: 'Morning Cardio', duration: 1200, exercises: 1 },
-];
+// import { formatSeconds } from '../utils/formatting'; // Removed as duration is not yet in the log
+import { useWorkoutManager } from '../hooks/useWorkoutManager';
 
 export default function WorkoutHistoryScreen() {
   const router = useRouter();
   const theme = useTheme();
   const styles = makeStyles(theme);
+  const { workoutHistory } = useWorkoutManager();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -30,27 +24,29 @@ export default function WorkoutHistoryScreen() {
       </View>
 
       <FlatList
-        data={MOCK_HISTORY}
+        data={workoutHistory}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
           <View style={styles.historyItem}>
             <View style={styles.itemHeader}>
-              <Text style={styles.itemName}>{item.name || 'Untitled Workout'}</Text>
+              <Text style={styles.itemName}>{item.workoutName || 'Untitled Workout'}</Text>
               <Text style={styles.itemDate}>
-                {new Date(item.date).toLocaleDateString()}
+                {new Date(item.workoutTime).toLocaleDateString()}
               </Text>
             </View>
             <View style={styles.itemDetails}>
-              <Text style={styles.detailText}>Duration: {formatSeconds(item.duration)}</Text>
-              <Text style={styles.detailText}>•</Text>
-              <Text style={styles.detailText}>{item.exercises} Exercises</Text>
+              {/* Note: Duration/Exercises count not currently in flattened log view, can be added later */}
+              <Text style={styles.detailText}>{new Date(item.workoutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</Text>
+              {item.notes && <Text style={styles.detailText} numberOfLines={1}>• {item.notes}</Text>}
             </View>
           </View>
         )}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No workout history found.</Text>
+            <Text style={styles.emptyText}>
+              There are currently no past workouts, start and finish a workout first.
+            </Text>
           </View>
         }
       />
