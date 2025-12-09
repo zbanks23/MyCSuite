@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { runOnJS } from 'react-native-reanimated';
+
 
 type ButtonId = 'nav' | 'action' | null;
 

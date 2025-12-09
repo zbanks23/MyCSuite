@@ -6,27 +6,23 @@ import { useRouter } from 'expo-router';
 import { IconSymbol } from './icon-symbol';
 import { useFloatingButton } from './FloatingButtonContext';
 import * as Haptics from 'expo-haptics';
-import { useNavigation } from '@react-navigation/native';
+
 
 const BUTTON_SIZE = 60;
 
-export function FastBackButton({ navigation: propNavigation }: { navigation?: any }) {
+export function FastBackButton() {
   const theme = useUITheme();
   const router = useRouter();
-  const defaultNavigation = useNavigation();
-  const navigation = propNavigation || defaultNavigation;
   const { activeButtonId } = useFloatingButton();
   
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     
-    // Prioritize Native Navigation for correct Tab History handling
-    if (navigation.canGoBack()) {
-         navigation.goBack();
-    } else if (router.canGoBack()) {
+    // Use Router for back navigation
+    if (router.canGoBack()) {
         router.back();
     } else {
-        // Fallback: If we can't go back, go to Home as requested
+        // Fallback: If we can't go back, go to Home
         router.replace('/');
     }
   };

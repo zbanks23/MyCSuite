@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useColorScheme as rnUseColorScheme } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import { Colors } from '@/constants/theme';
+import { Colors } from '../../constants/theme';
 import { UIThemeProvider } from '@mycsuite/ui';
 
 const THEME_PREF_KEY = 'theme-preference';
@@ -27,7 +27,7 @@ export const AppThemeProvider = ({ children }: { children: React.ReactNode }) =>
         if (stored === 'light' || stored === 'dark' || stored === 'system') {
           setPreferenceState(stored);
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
     })();
@@ -36,7 +36,7 @@ export const AppThemeProvider = ({ children }: { children: React.ReactNode }) =>
   const setPreference = async (p: ThemePreference) => {
     try {
       await SecureStore.setItemAsync(THEME_PREF_KEY, p);
-    } catch (e) {
+    } catch {
       // ignore
     }
     setPreferenceState(p);

@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useRef, useState} from "react";
+import React, {useState} from "react";
 import {
  	View,
  	Text,
@@ -17,15 +17,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useUITheme as useTheme } from '@mycsuite/ui';
 import { formatSeconds } from '../../utils/formatting';
-import { useWorkoutManager, Exercise } from '../../hooks/useWorkoutManager';
+import { useWorkoutManager } from '../../hooks/useWorkoutManager';
 
 import { 
-    createExercise, 
     createSequenceItem, 
     reorderSequence, 
-    calculateNextWorkoutState, 
-    generateSummary 
 } from './workout.logic';
+
+import { useActiveWorkout } from '../../providers/ActiveWorkoutProvider';
 
 // --- Component ---
 
@@ -33,11 +32,24 @@ export default function Workout() {
 
 	const theme = useTheme();
 	const router = useRouter();
-	const [exercises, setExercises] = useState<Exercise[]>(() => [
-		{id: "1", name: "Push Ups", sets: 3, reps: 12, completedSets: 0},
-		{id: "2", name: "Squats", sets: 3, reps: 10, completedSets: 0},
-		{id: "3", name: "Plank (sec)", sets: 3, reps: 45, completedSets: 0},
-	]);
+    
+    // consume shared state
+    const {
+        exercises,
+        setExercises,
+        isRunning,
+        workoutSeconds,
+        restSeconds,
+        currentIndex,
+        startWorkout,
+        pauseWorkout,
+        resetWorkout,
+        completeSet,
+        nextExercise,
+        prevExercise,
+        addExercise: contextAddExercise,
+        exportSummary
+    } = useActiveWorkout();
 
 	const [isAddModalOpen, setAddModalOpen] = useState(false);
 	const [newName, setNewName] = useState("");
@@ -65,64 +77,8 @@ export default function Workout() {
         deleteRoutine 
     } = useWorkoutManager();
 
-	const [isRunning, setRunning] = useState(false);
-	const [workoutSeconds, setWorkoutSeconds] = useState(0);
-	const workoutTimerRef = useRef<number | null>(null as any);
-
-	const [currentIndex, setCurrentIndex] = useState(0);
-	const [restSeconds, setRestSeconds] = useState(0);
-	const restTimerRef = useRef<number | null>(null as any);
-
-	// Effect: Persist current exercises state to localStorage for data persistence across reloads (web only).
-	useEffect(() => {
-		try {
-			if (typeof window !== "undefined" && window.localStorage) {
-				window.localStorage.setItem("mycpo_workout_exercises", JSON.stringify(exercises));
-			}
-		} catch {
-			// ignore
-		}
-	}, [exercises]);
-
-    // Effect: Manage the workout timer interval. Increments workoutSeconds every second while isRunning is true.
-	useEffect(() => {
-		if (isRunning) {
-			workoutTimerRef.current = setInterval(() => {
-				setWorkoutSeconds((s) => s + 1);
-			}, 1000) as any;
-		} else if (workoutTimerRef.current) {
-			clearInterval(workoutTimerRef.current as any);
-			workoutTimerRef.current = null;
-		}
-
-		return () => {
-			if (workoutTimerRef.current) clearInterval(workoutTimerRef.current as any);
-		};
-	}, [isRunning]);
-
-    // Effect: Manage the rest timer countdown. Decrements restSeconds every second until it reaches 0.
-	useEffect(() => {
-		if (restSeconds > 0) {
-			restTimerRef.current = setInterval(() => {
-				setRestSeconds((r) => {
-					if (r <= 1) {
-						clearInterval(restTimerRef.current as any);
-						restTimerRef.current = null;
-						return 0;
-					}
-					return r - 1;
-				});
-			}, 1000) as any;
-		}
-
-		return () => {
-			if (restTimerRef.current) clearInterval(restTimerRef.current as any);
-		};
-	}, [restSeconds]);
-
 	function addExercise() {
-        const ex = createExercise(newName, newSets, newReps);
-		setExercises((e) => [...e, ex]);
+        contextAddExercise(newName, newSets, newReps);
 		setNewName("");
 		setNewSets("3");
 		setNewReps("10");
@@ -179,58 +135,11 @@ export default function Workout() {
 		setRoutineSequence((s) => s.filter((x) => x.id !== id));
 	}
 
-	function startWorkout() {
-		if (exercises.length === 0) {
-			Alert.alert("No exercises", "Please add at least one exercise.");
-			return;
-		}
-		setRunning(true);
-	}
+    function handleStartWorkout() {
+        startWorkout();
+        router.push('/active-workout' as any);
+    }
 
-	function pauseWorkout() {
-		setRunning(false);
-	}
-
-	function resetWorkout() {
-		setRunning(false);
-		setWorkoutSeconds(0);
-		setRestSeconds(0);
-		setCurrentIndex(0);
-		setExercises((exs) => exs.map((x) => ({...x, completedSets: 0})));
-	}
-
-	function completeSet() {
-        const { updatedExercises, nextIndex, shouldRest } = calculateNextWorkoutState(exercises, currentIndex);
-        setExercises(updatedExercises);
-        setCurrentIndex(nextIndex);
-        if (shouldRest) {
-            setRestSeconds(60);
-        }
-	}
-
-	function nextExercise() {
-		setCurrentIndex((i) => Math.min(exercises.length - 1, i + 1));
-	}
-
-	function prevExercise() {
-		setCurrentIndex((i) => Math.max(0, i - 1));
-	}
-
-	function exportSummary() {
-        const json = generateSummary(workoutSeconds, exercises);
-		// Try to copy to clipboard or open share — best-effort
-		try {
-			if (typeof navigator !== "undefined" && (navigator as any).clipboard) {
-				(navigator as any).clipboard.writeText(json);
-				Alert.alert("Summary copied", "Workout summary JSON copied to clipboard.");
-				return;
-			}
-		} catch {
-			// fall through
-		}
-
-		Alert.alert("Workout Summary", json.slice(0, 1000));
-	}
 
 	const current = exercises[currentIndex];
 
@@ -247,8 +156,9 @@ export default function Workout() {
 				<TouchableOpacity style={styles.controlButton} onPress={() => setAddModalOpen(true)} accessibilityLabel="Add exercise">
 					<Text style={styles.controlText}>+ Add</Text>
 				</TouchableOpacity>
+
 				{!isRunning ? (
-					<TouchableOpacity style={styles.controlButtonPrimary} onPress={startWorkout} accessibilityLabel="Start workout">
+					<TouchableOpacity style={styles.controlButtonPrimary} onPress={handleStartWorkout} accessibilityLabel="Start workout">
 						<Text style={styles.controlTextPrimary}>Start</Text>
 					</TouchableOpacity>
 				) : (

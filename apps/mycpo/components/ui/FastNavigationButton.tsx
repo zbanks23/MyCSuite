@@ -2,8 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { useUITheme } from '@mycsuite/ui';
-import { usePathname } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
+import { usePathname, useRouter } from 'expo-router';
 
 import { RadialMenu, RadialMenuItem } from './RadialMenu';
 import { useFloatingButton } from './FloatingButtonContext';
@@ -18,11 +17,9 @@ const PATH_CONFIG = [
     { match: ['/workout', '/(tabs)/workout'], icon: 'dumbbell.fill' },
 ];
 
-export function FastNavigationButton({ navigation: propNavigation }: { navigation?: any }) {
+export function FastNavigationButton() {
   const theme = useUITheme();
-  // Use prop navigation if valid, otherwise fallback to hook (though hook seems to be the source of error)
-  const defaultNavigation = useNavigation();
-  const navigation = propNavigation || defaultNavigation;
+  const router = useRouter();
   
   const pathname = usePathname();
   const { activeButtonId, setActiveButtonId } = useFloatingButton();
@@ -34,13 +31,13 @@ export function FastNavigationButton({ navigation: propNavigation }: { navigatio
   }, [pathname]);
 
   const navigateTo = React.useCallback((route: string) => {
-      if (!navigation) {
-          console.error('FastNavigationButton: Navigation prop is missing!');
-          return;
-      }
-      // @ts-ignore - Dynamic string navigation with merge: true for proper Tab behavior
-      navigation.navigate({ name: route, merge: true });
-  }, [navigation]);
+      // Use router.navigate to switch tabs or push screens
+      // mapped routes for tabs:
+      if (route === 'index') router.navigate('/(tabs)');
+      else if (route === 'workout') router.navigate('/(tabs)/workout');
+      else if (route === 'profile') router.navigate('/(tabs)/profile');
+      else router.navigate(route as any);
+  }, [router]);
 
   // Define menu items with explicit angles
   // We use route names (index, workout, profile) to ensure the Tab Navigator tracks history correctly.

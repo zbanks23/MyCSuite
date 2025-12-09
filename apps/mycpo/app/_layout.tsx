@@ -5,11 +5,18 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider, useAuth } from '@mycsuite/auth';
-import AppThemeProvider from './providers/AppThemeProvider';
+import { AppThemeProvider } from './providers/AppThemeProvider';
 import { NavigationSettingsProvider } from './providers/NavigationSettingsProvider';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useColorScheme } from '../hooks/use-color-scheme';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { ActiveWorkoutProvider } from '../providers/ActiveWorkoutProvider'; // Fixed import path
+import { WorkoutStickyHeader } from '../components/ui/WorkoutStickyHeader';
+import { FastNavigationButton } from '../components/ui/FastNavigationButton';
+import { FastUtilityButton } from '../components/ui/FastUilityButton';
+import { FastBackButton } from '../components/ui/FastBackButton';
+import { FloatingButtonProvider } from '../components/ui/FloatingButtonContext';
+import { GlobalOverlay } from '../components/ui/GlobalOverlay';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -43,6 +50,7 @@ function RootLayoutNav() {
       <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       <Stack.Screen name="auth" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{ headerShown: false }} />
+      <Stack.Screen name="active-workout" options={{ headerShown: false, presentation: 'transparentModal', animation: 'fade' }} />
     </Stack>
   );
 }
@@ -66,8 +74,18 @@ export default function RootLayout() {
         <NavigationSettingsProvider>
           <AppThemeProvider>
             <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-              <RootLayoutNav />
-              <StatusBar style="auto" />
+              <ActiveWorkoutProvider>
+                <FloatingButtonProvider>
+                  <RootLayoutNav />
+                  <WorkoutStickyHeader />
+                  <GlobalOverlay>
+                    <FastNavigationButton />
+                    <FastUtilityButton />
+                    <FastBackButton />
+                  </GlobalOverlay>
+                </FloatingButtonProvider>
+                <StatusBar style="auto" />
+              </ActiveWorkoutProvider>
             </ThemeProvider>
           </AppThemeProvider>
         </NavigationSettingsProvider>

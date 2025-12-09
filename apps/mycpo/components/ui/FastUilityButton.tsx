@@ -5,6 +5,9 @@ import { useUITheme } from '@mycsuite/ui';
 import { useRouter, usePathname } from 'expo-router';
 import { RadialMenu, RadialMenuItem } from './RadialMenu';
 import { useFloatingButton } from './FloatingButtonContext';
+import { useActiveWorkout } from '../../providers/ActiveWorkoutProvider';
+
+// ... (imports remain)
 
 // Configuration
 const BUTTON_SIZE = 60; 
@@ -23,11 +26,7 @@ const CONTEXT_ACTIONS: Record<string, ActionItemType[]> = {
     { id: 'add_widget', icon: 'plus', label: 'Add Widget', action: 'add_widget' },
     { id: 'quick_note', icon: 'pencil', label: 'Quick Note', action: 'quick_note' },
   ],
-  'workout': [
-    { id: 'start_empty', icon: 'play.fill', label: 'Start Empty', route: '/(tabs)/workout/start' },
-    { id: 'log_weight', icon: 'scale.3d', label: 'Log Weight', action: 'log_weight' },
-    { id: 'create_routine', icon: 'list.bullet.clipboard', label: 'New Routine', action: 'create_routine' },
-  ],
+  // 'workout' actions will be generated dynamically now
   'profile': [
     { id: 'edit_profile', icon: 'pencil', label: 'Edit', route: '/settings/account' },
     { id: 'settings', icon: 'gear', label: 'Settings', route: '/settings' },
@@ -39,21 +38,43 @@ export function FastUtilityButton() {
   const router = useRouter();
   const pathname = usePathname();
   const { activeButtonId, setActiveButtonId } = useFloatingButton();
+  const { isRunning, startWorkout, pauseWorkout } = useActiveWorkout();
 
   // Determine current context and actions
   const currentActions = useMemo(() => {
-     if (pathname.includes('workout')) return CONTEXT_ACTIONS['workout'];
+     if (pathname.includes('workout')) {
+         return [
+            { 
+                id: 'toggle_workout', 
+                icon: isRunning ? 'pause.fill' : 'play.fill', 
+                label: isRunning ? 'Pause' : 'Start', 
+                action: 'toggle_workout' 
+            },
+            { id: 'log_weight', icon: 'scale.3d', label: 'Log Weight', action: 'log_weight' },
+            { id: 'create_routine', icon: 'list.bullet.clipboard', label: 'New Routine', action: 'create_routine' },
+         ];
+     }
      if (pathname.includes('profile')) return CONTEXT_ACTIONS['profile'];
      return CONTEXT_ACTIONS['home'] || [];
-  }, [pathname]);
+  }, [pathname, isRunning]);
 
   const handleAction = React.useCallback((item: ActionItemType) => {
+      if (item.action === 'toggle_workout') {
+          if (isRunning) {
+              pauseWorkout();
+          } else {
+              startWorkout();
+              router.push('/active-workout' as any);
+          }
+          return;
+      }
+
       if (item.route) {
           router.push(item.route as any);
       } else {
           console.log('Trigger action:', item.action);
       }
-  }, [router]);
+  }, [router, isRunning, startWorkout, pauseWorkout]);
 
   // Map to RadialMenuItems
   // We use distributed angles, so we don't set angle explicitly

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import SettingsScreen from '../app/settings';
 
 // Mock dependencies
@@ -18,6 +18,15 @@ jest.mock('@mycsuite/auth', () => ({
     auth: {
       signOut: jest.fn().mockResolvedValue({ error: null }),
     },
+    from: jest.fn(() => ({
+      select: jest.fn(() => ({
+        eq: jest.fn(() => ({
+          maybeSingle: jest.fn().mockResolvedValue({ data: { username: 'testuser' }, error: null }),
+          single: jest.fn(),
+        })),
+      })),
+      upsert: jest.fn().mockResolvedValue({ error: null }),
+    })),
   },
 }));
 
@@ -32,7 +41,7 @@ jest.mock('@mycsuite/ui', () => ({
 }));
 
 // Mock components that might cause issues
-jest.mock('../components/themed-view', () => ({
+jest.mock('../components/ui/ThemedView', () => ({
   ThemedView: 'View',
 }));
 
@@ -40,7 +49,16 @@ jest.mock('../components/ui/icon-symbol', () => ({
   IconSymbol: 'View',
 }));
 
-jest.mock('../components/ui/ThemeToggle', () => 'View');
+jest.mock('../components/ui/ThemeToggle', () => ({
+  ThemeToggle: 'View',
+}));
+
+jest.mock('../app/providers/NavigationSettingsProvider', () => ({
+  useNavigationSettings: () => ({
+    isFabEnabled: false,
+    toggleFab: jest.fn(),
+  }),
+}));
 
 jest.mock('react-native-css-interop', () => ({
   cssInterop: jest.fn(),
@@ -48,18 +66,30 @@ jest.mock('react-native-css-interop', () => ({
 }));
 
 describe('SettingsScreen', () => {
-  it('renders correctly', () => {
-    const { getByText, getByPlaceholderText } = render(<SettingsScreen />);
+  it('renders correctly', async () => {
+    const { getByText, getByPlaceholderText, getByDisplayValue } = render(<SettingsScreen />);
+    
     expect(getByText('Settings')).toBeTruthy();
     expect(getByText('Account')).toBeTruthy();
     expect(getByText('test@example.com')).toBeTruthy();
-    expect(getByPlaceholderText('Username')).toBeTruthy();
+    
+    // Wait for async profile data to load
+    await waitFor(() => {
+        expect(getByDisplayValue('testuser')).toBeTruthy();
+    });
+
     expect(getByPlaceholderText('Full Name')).toBeTruthy();
     expect(getByText('Sign Out')).toBeTruthy();
   });
 
-  it('calls signOut when Sign Out button is pressed', () => {
-    const { getByText } = render(<SettingsScreen />);
+  it('calls signOut when Sign Out button is pressed', async () => {
+    const { getByText, getByDisplayValue } = render(<SettingsScreen />);
+    
+    // Wait for async profile data to load prevents act() warning from mounting effect
+    await waitFor(() => {
+        expect(getByDisplayValue('testuser')).toBeTruthy();
+    });
+
     const signOutBtn = getByText('Sign Out');
     fireEvent.press(signOutBtn);
     
