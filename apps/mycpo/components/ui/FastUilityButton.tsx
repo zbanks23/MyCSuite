@@ -59,6 +59,7 @@ export function FastUtilityButton() {
          return [
             { id: 'create_routine', icon: 'list.bullet.clipboard', label: 'New Routine', action: 'create_routine' },
             // TODO: Add a button to access all exercises
+            // TODO: Add a button to choose a workout
             { id: 'log_weight', icon: 'scale.3d', label: 'Log Weight', action: 'log_weight' },
          ];
      }

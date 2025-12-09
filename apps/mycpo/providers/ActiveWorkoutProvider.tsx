@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { Exercise } from '../hooks/useWorkoutManager'; 
-import { createExercise, calculateNextWorkoutState, generateSummary } from '../app/(tabs)/workout.logic';
+import { createExercise, generateSummary } from '../app/(tabs)/workout.logic';
 
 // Define the shape of our context
 interface ActiveWorkoutContextType {
@@ -14,10 +14,11 @@ interface ActiveWorkoutContextType {
     startWorkout: () => void;
     pauseWorkout: () => void;
     resetWorkout: () => void;
-    completeSet: () => void;
+    completeSet: (index?: number, input?: { weight?: string, reps?: string, duration?: string }) => void;
     nextExercise: () => void;
     prevExercise: () => void;
     addExercise: (name: string, sets: string, reps: string) => void;
+    updateExercise: (index: number, updates: Partial<Exercise>) => void;
     exportSummary: () => void;
     finishWorkout: () => void;
 }
@@ -140,7 +141,8 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
     // Re-implementing functions to use current state
     const addExercise = (name: string, sets: string, reps: string) => {
         const ex = createExercise(name, sets, reps);
-		setExercises((e) => [...e, ex]);
+        // Ensure type compatibility by setting completedSets and logs explicitly if missing
+		setExercises((e) => [...e, { ...ex, completedSets: 0, logs: [] }]);
 	};
 
     const nextExercise = () => {
@@ -151,13 +153,46 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
 		setCurrentIndex((i) => Math.max(0, i - 1));
 	};
 
-    const handleCompleteSet = () => {
-        const { updatedExercises, nextIndex, shouldRest } = calculateNextWorkoutState(exercises, currentIndex);
-        setExercises(updatedExercises);
-        setCurrentIndex(nextIndex);
-        if (shouldRest) {
-            setRestSeconds(60);
-        }
+    const updateExercise = (index: number, updates: Partial<Exercise>) => {
+        setExercises(current => 
+            current.map((ex, i) => i === index ? { ...ex, ...updates } : ex)
+        );
+    };
+
+    const handleCompleteSet = (targetIndex?: number, input?: { weight?: string, reps?: string, duration?: string }) => {
+        const indexToComplete = targetIndex ?? currentIndex;
+        
+        setExercises(currentExercises => {
+            return currentExercises.map((ex, idx) => {
+                if (idx === indexToComplete) {
+                    const currentSets = ex.completedSets || 0;
+                    const logs = ex.logs || [];
+                    
+                    // Parse inputs
+                    const weight = input?.weight ? parseFloat(input.weight) : undefined;
+                    const reps = input?.reps ? parseFloat(input.reps) : undefined; 
+                    // Fallback to target reps? Usually yes.
+                    const finalReps = reps !== undefined ? reps : ex.reps;
+                    
+                    const newLog: any = {
+                        id: Date.now().toString(),
+                        weight,
+                        reps: finalReps,
+                        // duration...
+                    };
+
+                    return { 
+                        ...ex, 
+                        completedSets: currentSets + 1,
+                        logs: [...logs, newLog]
+                    };
+                }
+                return ex;
+            });
+        });
+
+        // Rest timer logic remains...
+        setRestSeconds(60); 
     };
 
     const exportSummary = () => {
@@ -189,6 +224,7 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
         nextExercise,
         prevExercise,
         addExercise,
+        updateExercise,
         exportSummary,
         finishWorkout: resetWorkout // Using resetWorkout as the base for finish logic
     };

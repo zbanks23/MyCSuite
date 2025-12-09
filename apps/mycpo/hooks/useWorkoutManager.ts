@@ -2,12 +2,25 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { supabase, useAuth } from "@mycsuite/auth";
 
+export type SetLog = {
+    id?: string;
+    weight?: number;
+    reps?: number;
+    duration?: number; // seconds
+};
+
 export type Exercise = {
     id: string;
     name: string;
-    sets: number;
-    reps: number;
-    completedSets?: number;
+    sets: number; // Target sets
+    reps: number; // Target reps
+
+    // Legacy support? Or replace?
+    // We'll keep completedSets as a derived getter or simple counter if needed, but primary is logs.
+    completedSets: number;
+
+    logs?: SetLog[]; // Array of completed set details
+    type?: "reps" | "duration" | "bodyweight"; // Determines input type
 };
 
 export type WorkoutLog = {
