@@ -16,7 +16,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useUITheme as useTheme } from '@mycsuite/ui';
-import { formatSeconds } from '../../utils/formatting';
 import { useWorkoutManager } from '../../hooks/useWorkoutManager';
 
 import { 
@@ -25,6 +24,7 @@ import {
 } from './workout.logic';
 
 import { useActiveWorkout } from '../../providers/ActiveWorkoutProvider';
+import { RoutineCard } from '../../components/workouts/RoutineCard';
 
 // --- Component ---
 
@@ -33,27 +33,17 @@ export default function Workout() {
 	const theme = useTheme();
 	const router = useRouter();
     
-    // consume shared state
+	// consume shared state
     const {
-        exercises,
         setExercises,
         isRunning,
-        restSeconds,
-        currentIndex,
         startWorkout,
         pauseWorkout,
-        completeSet,
-        nextExercise,
-        prevExercise,
-
         hasActiveSession
     } = useActiveWorkout();
 
 
-
 	const [isLoadModalOpen, setLoadModalOpen] = useState(false);
-
-	// Create routine (schedule) modal
 	const [isCreateRoutineOpen, setCreateRoutineOpen] = useState(false);
 	const [routineDraftName, setRoutineDraftName] = useState("");
 	const [routineSequence, setRoutineSequence] = useState<any[]>([]);
@@ -70,12 +60,16 @@ export default function Workout() {
     } = useWorkoutManager();
 
 
-
-
-
 	function loadWorkout(id: string) {
+        // Allow loading even if not "active" session (but might have default exercises)
         if (hasActiveSession) {
-            Alert.alert("Active Session", "Please finish or cancel your current workout before loading a new one.");
+            Alert.alert(
+                "Active Session", 
+                "Please finish or cancel your current workout before loading a new one.",
+                [
+                    { text: "OK" }
+                ]
+            );
             return;
         }
 
@@ -87,10 +81,10 @@ export default function Workout() {
 	}
 
 	function loadRoutine(id: string) {
-    if (hasActiveSession) {
-        Alert.alert("Active Session", "Please finish or cancel your current workout before loading a new routine.");
-        return;
-    }
+        if (hasActiveSession) {
+            Alert.alert("Active Session", "Please finish or cancel your current workout before loading a new routine.");
+            return;
+        }
 	const r = routines.find((x) => x.id === id);
 	if (!r) return;
 	// load first day's workout into current exercises for quick preview
@@ -130,8 +124,6 @@ export default function Workout() {
     }
 
 
-	const current = exercises[currentIndex];
-
 	const styles = makeStyles(theme);
 
 	return (
@@ -154,65 +146,75 @@ export default function Workout() {
 					</TouchableOpacity>
 				)}
 
-
-
-				<TouchableOpacity style={styles.controlButton} onPress={() => setCreateRoutineOpen(true)} accessibilityLabel="Create routine">
-					<Text style={styles.controlText}>Create Routine</Text>
-				</TouchableOpacity>
-				<TouchableOpacity style={styles.controlButton} onPress={() => setLoadModalOpen(true)} accessibilityLabel="Load routine">
-					<Text style={styles.controlText}>Load</Text>
-				</TouchableOpacity>
 				<TouchableOpacity style={styles.controlButton} onPress={() => router.push('/workout-history' as any)} accessibilityLabel="History">
 					<Text style={styles.controlText}>History</Text>
 				</TouchableOpacity>
 			</View>
 
-			<View style={styles.currentContainer}>
-				<Text style={styles.sectionTitle}>Current</Text>
-				{current ? (
-					<View style={styles.currentCard}>
-						<Text style={styles.currentName}>{current.name}</Text>
-						<Text style={styles.currentInfo}>
-							Sets: {current.completedSets || 0} / {current.sets} • Reps: {current.reps}
-						</Text>
+			{/* Dashboard: Routines & Saved Workouts (Visible when inactive) */}
+				<View style={styles.dashboardContainer}>
+					
+                    {/* Routines Section */}
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>My Routines</Text>
+                        <TouchableOpacity onPress={() => setCreateRoutineOpen(true)}>
+                            <Text style={{color: theme.primary}}>+ New</Text>
+                        </TouchableOpacity>
+                    </View>
+                    
+                    {routines.length === 0 ? (
+                        <View style={styles.emptyState}>
+                            <Text style={{color: theme.icon, marginBottom: 8}}>No routines yet.</Text>
+                            <TouchableOpacity onPress={() => setCreateRoutineOpen(true)} style={styles.controlButton}>
+                                <Text style={styles.controlText}>Create a Routine</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                        <FlatList
+                            data={routines}
+                            horizontal
+                            showsHorizontalScrollIndicator={false} // Clean look
+                            contentContainerStyle={{paddingRight: 16}}
+                            keyExtractor={(i) => i.id}
+                            renderItem={({item}) => (
+                                <RoutineCard 
+                                    routine={item} 
+                                    onPress={() => loadRoutine(item.id)}
+                                    onLongPress={() => deleteRoutine(item.id)}
+                                />
+                            )}
+                        />
+                    )}
 
-						<View style={styles.currentActions}>
-							<TouchableOpacity style={styles.actionBtn} onPress={prevExercise} accessibilityLabel="Previous exercise">
-								<Text>◀ Prev</Text>
-							</TouchableOpacity>
-							<TouchableOpacity style={styles.actionBtnPrimary} onPress={() => completeSet(currentIndex)} accessibilityLabel="Complete set">
-								<Text style={styles.controlTextPrimary}>Complete Set</Text>
-							</TouchableOpacity>
-							<TouchableOpacity style={styles.actionBtn} onPress={nextExercise} accessibilityLabel="Next exercise">
-								<Text>Next ▶</Text>
-							</TouchableOpacity>
-						</View>
-
-						<Text style={styles.restText}>Rest: {restSeconds > 0 ? formatSeconds(restSeconds) : "—"}</Text>
-					</View>
-				) : (
-					<Text style={{color: theme.icon}}>No current exercise</Text>
-				)}
-			</View>
-
-			<View style={styles.listContainer}>
-				<Text style={styles.sectionTitle}>Exercises</Text>
-				<FlatList
-					data={exercises}
-					keyExtractor={(i) => i.id}
-					renderItem={({item, index}) => (
-						<View style={[styles.item, index === currentIndex ? styles.itemActive : null]}>
-							<View style={{flex: 1}}>
-								<Text style={styles.itemName}>{item.name}</Text>
-									<Text style={styles.itemMeta}>Sets: {item.sets} • Reps: {item.reps}</Text>
-							</View>
-							<Text style={styles.itemDone}>{(item.completedSets || 0)}/{item.sets}</Text>
-						</View>
-					)}
-				/>
-			</View>
-
-
+                    {/* Saved Workouts Section (Quick Access) */}
+                    <View style={[styles.sectionHeader, {marginTop: 24}]}>
+                         <Text style={styles.sectionTitle}>Saved Workouts</Text>
+                         <TouchableOpacity onPress={() => setWorkoutsListOpen(true)}>
+                            <Text style={{color: theme.primary}}>See All</Text>
+                        </TouchableOpacity>
+                    </View>
+                     {savedWorkouts.length === 0 ? (
+                        <Text style={{color: theme.icon}}>No saved workouts.</Text>
+                    ) : (
+                        <FlatList
+                            data={savedWorkouts.slice(0, 5)} // Show top 5
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{paddingRight: 16}}
+                            keyExtractor={(i) => i.id}
+                            renderItem={({item}) => (
+                                <TouchableOpacity 
+                                    style={styles.workoutCard} 
+                                    onPress={() => loadWorkout(item.id)}
+                                    onLongPress={() => deleteSavedWorkout(item.id)}
+                                >
+                                    <Text style={styles.workoutCardTitle} numberOfLines={2}>{item.name}</Text>
+                                    <Text style={{color: theme.icon, fontSize: 12}}>{item.exercises?.length || 0} Exercises</Text>
+                                </TouchableOpacity>
+                            )}
+                        />
+                    )}
+				</View>
 
 			{/* Saved Workouts modal */}
 			<Modal visible={isWorkoutsListOpen} animationType="slide" transparent={true}>
@@ -390,5 +392,22 @@ const makeStyles = (theme: any) =>
 		modalCard: {width: "90%", padding: 16, borderRadius: 12, backgroundColor: theme.background},
 		modalTitle: {fontSize: 18, fontWeight: "700", marginBottom: 8, color: theme.text},
 		input: {borderWidth: 1, borderColor: theme.surface, borderRadius: 8, padding: 10, marginBottom: 8, color: theme.text},
+        dashboardContainer: {flex: 1, marginTop: 12},
+        sectionHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12},
+        emptyState: {padding: 16, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: theme.surface, borderRadius: 12, borderStyle: 'dashed'},
+        workoutCard: {
+            backgroundColor: theme.surface,
+            borderRadius: 12,
+            padding: 12,
+            width: 140,
+            marginRight: 12,
+            height: 100,
+            justifyContent: 'space-between',
+        },
+        workoutCardTitle: {
+            fontWeight: '600',
+            color: theme.text,
+            fontSize: 16,
+        },
 	});
 
