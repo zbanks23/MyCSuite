@@ -47,7 +47,8 @@ export default function Workout() {
         completeSet,
         nextExercise,
         prevExercise,
-        addExercise: contextAddExercise
+        addExercise: contextAddExercise,
+        hasActiveSession
     } = useActiveWorkout();
 
 	const [isAddModalOpen, setAddModalOpen] = useState(false);
@@ -92,6 +93,11 @@ export default function Workout() {
 	}
 
 	function loadWorkout(id: string) {
+        if (hasActiveSession) {
+            Alert.alert("Active Session", "Please finish or cancel your current workout before loading a new one.");
+            return;
+        }
+
 		const w = savedWorkouts.find((x) => x.id === id);
 		if (!w) return;
 		setExercises(w.exercises || []);
@@ -100,6 +106,10 @@ export default function Workout() {
 	}
 
 	function loadRoutine(id: string) {
+    if (hasActiveSession) {
+        Alert.alert("Active Session", "Please finish or cancel your current workout before loading a new routine.");
+        return;
+    }
 	const r = routines.find((x) => x.id === id);
 	if (!r) return;
 	// load first day's workout into current exercises for quick preview
