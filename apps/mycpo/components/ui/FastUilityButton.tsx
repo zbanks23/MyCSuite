@@ -38,13 +38,14 @@ export function FastUtilityButton() {
   const router = useRouter();
   const pathname = usePathname();
   const { activeButtonId, setActiveButtonId } = useFloatingButton();
-  const { isRunning, startWorkout, pauseWorkout, finishWorkout, isExpanded } = useActiveWorkout();
+  const { isRunning, startWorkout, pauseWorkout, finishWorkout, resetWorkout, isExpanded, hasActiveSession } = useActiveWorkout();
 
   // Determine current context and actions
   const currentActions = useMemo(() => {
-     if (isExpanded || pathname.includes('active-workout')) {
+     if (hasActiveSession || isExpanded || pathname.includes('active-workout')) {
          return [
             { id: 'finish_workout', icon: 'flag.checkered', label: 'Finish', action: 'finish_workout' },
+            { id: 'reset_workout', icon: 'arrow.counterclockwise', label: 'Reset', action: 'reset_workout' },
             { 
                 id: 'toggle_workout', 
                 icon: isRunning ? 'pause.fill' : 'play.fill', 
@@ -64,7 +65,7 @@ export function FastUtilityButton() {
      }
      if (pathname.includes('profile')) return CONTEXT_ACTIONS['profile'];
      return CONTEXT_ACTIONS['home'] || [];
-  }, [pathname, isRunning, isExpanded]);
+  }, [pathname, isRunning, isExpanded, hasActiveSession]);
 
   const handleAction = React.useCallback((item: ActionItemType) => {
       if (item.action === 'toggle_workout') {
@@ -82,12 +83,17 @@ export function FastUtilityButton() {
         return; 
       }
 
+      if (item.action === 'reset_workout') {
+          resetWorkout();
+          return;
+      }
+      
       if (item.route) {
           router.push(item.route as any);
       } else {
           console.log('Trigger action:', item.action);
       }
-  }, [router, isRunning, startWorkout, pauseWorkout, finishWorkout]);
+  }, [router, isRunning, startWorkout, pauseWorkout, finishWorkout, resetWorkout]);
 
   // Map to RadialMenuItems
   // We use distributed angles, so we don't set angle explicitly

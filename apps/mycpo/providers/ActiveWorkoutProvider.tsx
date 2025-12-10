@@ -26,6 +26,7 @@ interface ActiveWorkoutContextType {
     setExpanded: (expanded: boolean) => void;
     exportSummary: () => void;
     finishWorkout: () => void;
+    hasActiveSession: boolean;
 }
 
 const ActiveWorkoutContext = createContext<ActiveWorkoutContextType | undefined>(undefined);
@@ -38,6 +39,7 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
 		{id: "3", name: "Plank (sec)", sets: 3, reps: 45, completedSets: 0},
 	]);
     const [workoutName, setWorkoutName] = useState("Current Workout");
+    const [hasActiveSession, setHasActiveSession] = useState(false);
     
     const [isRunning, setRunning] = useState(false);
 	const [workoutSeconds, setWorkoutSeconds] = useState(0);
@@ -128,6 +130,7 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
 			return;
 		}
 		setRunning(true);
+        setHasActiveSession(true);
         setIsExpanded(true);
 	}, [exercises]);
 
@@ -136,11 +139,15 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
 	}, []);
 
     const resetWorkout = useCallback(() => {
-		setRunning(false);
+		// Keep running (or start if paused) as per user request to "continue counting" after reset
+		setRunning(true);
+        // Ensure session determines visibility
+        setHasActiveSession(true); 
+        
 		setWorkoutSeconds(0);
 		setRestSeconds(0);
 		setCurrentIndex(0);
-		setExercises((exs) => exs.map((x) => ({...x, completedSets: 0})));
+		setExercises((exs) => exs.map((x) => ({...x, completedSets: 0, logs: []})));
 	}, []);
 
     // completeSet removed as we use handleCompleteSet below
@@ -223,9 +230,16 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
     const toggleExpanded = () => setIsExpanded(prev => !prev);
 
     const handleFinishWorkout = useCallback(() => {
-        resetWorkout();
+        // Here we actually stop everything
+		setRunning(false);
+		setWorkoutSeconds(0);
+		setRestSeconds(0);
+		setCurrentIndex(0);
+		setExercises((exs) => exs.map((x) => ({...x, completedSets: 0, logs: []})));
+        
+        setHasActiveSession(false);
         setIsExpanded(false);
-    }, [resetWorkout]);
+    }, []);
 
     const value = {
         exercises,
@@ -246,6 +260,7 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
         exportSummary,
         finishWorkout: handleFinishWorkout,
         isExpanded,
+        hasActiveSession,
         toggleExpanded,
         setExpanded: setIsExpanded,
         setWorkoutName,

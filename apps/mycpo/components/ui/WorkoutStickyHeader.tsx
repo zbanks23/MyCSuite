@@ -12,11 +12,11 @@ export function WorkoutStickyHeader() {
     const insets = useSafeAreaInsets();
     
     // Get workout state
-    const { isRunning, workoutSeconds, workoutName, isExpanded, toggleExpanded } = useActiveWorkout();
+    const { isRunning, workoutSeconds, workoutName, isExpanded, toggleExpanded, hasActiveSession } = useActiveWorkout();
     
     // Logic for visibility:
-    // Must be running OR have some time elapsed (paused state).
-    const hasActiveWorkout = isRunning || workoutSeconds > 0;
+    // Must have an active session
+    const hasActiveWorkout = hasActiveSession;
     
     
     if (!hasActiveWorkout) {
