@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { Exercise, useWorkoutManager } from '../hooks/useWorkoutManager'; 
-import { createExercise } from '../app/(tabs)/workout.logic';
+import { createExercise } from '../utils/workout-logic';
 
 // Define the shape of our context
 interface ActiveWorkoutContextType {

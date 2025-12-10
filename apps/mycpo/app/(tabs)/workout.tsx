@@ -22,7 +22,7 @@ import { useWorkoutManager } from '../../hooks/useWorkoutManager';
 import { 
     createSequenceItem, 
     reorderSequence, 
-} from './workout.logic';
+} from '../../utils/workout-logic';
 
 import { useActiveWorkout } from '../../providers/ActiveWorkoutProvider';
 import { RoutineCard } from '../../components/workouts/RoutineCard';
@@ -338,6 +338,7 @@ export default function Workout() {
                                     routine={item} 
                                     onPress={() => handleSetRoutine(item.id)}
                                     onLongPress={() => deleteRoutine(item.id)}
+                                    onDelete={() => deleteRoutine(item.id)}
                                 />
                             )}
                         />

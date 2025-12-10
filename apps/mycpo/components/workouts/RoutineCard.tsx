@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useUITheme } from '@mycsuite/ui';
 
+
+
 interface RoutineCardProps {
   routine: {
     id: string;
@@ -11,9 +13,10 @@ interface RoutineCardProps {
   };
   onPress: () => void;
   onLongPress?: () => void;
+  onDelete?: () => void;
 }
 
-export function RoutineCard({ routine, onPress, onLongPress }: RoutineCardProps) {
+export function RoutineCard({ routine, onPress, onLongPress, onDelete }: RoutineCardProps) {
   const theme = useUITheme();
   const styles = makeStyles(theme);
 
@@ -28,9 +31,19 @@ export function RoutineCard({ routine, onPress, onLongPress }: RoutineCardProps)
       activeOpacity={0.7}
     >
       <View style={styles.header}>
-        <Text style={styles.name} numberOfLines={1}>
+        <Text style={[styles.name, {flex: 1}]} numberOfLines={1}>
           {routine.name}
         </Text>
+        {onDelete && (
+             <TouchableOpacity 
+                onPress={(e) => { 
+                    onDelete(); 
+                }} 
+                style={{padding: 4}}
+            >
+                <Text style={{color: theme.icon, fontSize: 18}}>×</Text>
+            </TouchableOpacity>
+        )}
       </View>
       
       <View style={styles.content}>
@@ -52,13 +65,13 @@ const makeStyles = (theme: any) =>
     card: {
       backgroundColor: theme.surface,
       borderRadius: 12,
-      padding: 16,
+      padding: 12,
       width: '100%',
-      marginBottom: 12,
+      marginBottom: 10,
       borderWidth: 1,
       borderColor: theme.options?.borderColor || 'rgba(150,150,150,0.1)',
       justifyContent: 'space-between',
-      minHeight: 120, // ensure consistent height
+      minHeight: 90, // ensure consistent height
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.05,
@@ -66,10 +79,13 @@ const makeStyles = (theme: any) =>
       elevation: 2,
     },
     header: {
-      marginBottom: 8,
+      marginBottom: 4,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
     name: {
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: '700',
       color: theme.text,
     },
@@ -77,12 +93,12 @@ const makeStyles = (theme: any) =>
       flex: 1,
     },
     stats: {
-      fontSize: 14,
+      fontSize: 13,
       color: theme.icon,
-      marginBottom: 4,
+      marginBottom: 2,
     },
     footer: {
-      marginTop: 12,
+      marginTop: 8,
       flexDirection: 'row',
       justifyContent: 'flex-end',
     },
