@@ -711,7 +711,7 @@ export function useWorkoutManager() {
                 );
             }
         }
-    }, [activeRoutine?.lastCompletedDate]); // Depend on the date string
+    }, [activeRoutine, activeRoutine?.lastCompletedDate]); // Depend on the date string
 
     function clearActiveRoutine() {
         setActiveRoutine(null);

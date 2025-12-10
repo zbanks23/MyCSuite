@@ -36,11 +36,12 @@ export default function Workout() {
     
 	// consume shared state
     const {
+        exercises,
         setExercises,
         isRunning,
         startWorkout,
         pauseWorkout,
-        hasActiveSession
+        hasActiveSession,
     } = useActiveWorkout();
 
 
@@ -160,34 +161,33 @@ export default function Workout() {
 		<SafeAreaView style={styles.container}>
 			<View style={styles.header}>
 				<Text style={styles.title}>Workout</Text>
-
 			</View>
 
+			{/* Controls Row */}
 			<View style={styles.controlsRow}>
 
 
-				{!isRunning ? (
-					<TouchableOpacity style={styles.controlButtonPrimary} onPress={handleStartWorkout} accessibilityLabel="Start workout">
-						<Text style={styles.controlTextPrimary}>Start</Text>
-					</TouchableOpacity>
-				) : (
-					<TouchableOpacity style={styles.controlButton} onPress={pauseWorkout} accessibilityLabel="Pause workout">
-						<Text style={styles.controlText}>Pause</Text>
-					</TouchableOpacity>
-				)}
+					{!isRunning ? (
+						<TouchableOpacity style={styles.controlButtonPrimary} onPress={handleStartWorkout} accessibilityLabel="Start workout">
+							<Text style={styles.controlTextPrimary}>Start</Text>
+						</TouchableOpacity>
+					) : (
+						<TouchableOpacity style={styles.controlButton} onPress={pauseWorkout} accessibilityLabel="Pause workout">
+							<Text style={styles.controlText}>Pause</Text>
+						</TouchableOpacity>
+					)}
 
-				<TouchableOpacity style={styles.controlButton} onPress={() => router.push('/workout-history' as any)} accessibilityLabel="History">
-					<Text style={styles.controlText}>History</Text>
-				</TouchableOpacity>
-			</View>
+					<TouchableOpacity style={styles.controlButton} onPress={() => router.push('/workout-history' as any)} accessibilityLabel="History">
+						<Text style={styles.controlText}>History</Text>
+					</TouchableOpacity>
+				</View>
 
-			{/* Dashboard: Routines & Saved Workouts (Visible when inactive) */}
-			{!hasActiveSession && (
-				<ScrollView 
-                    style={styles.dashboardContainer} 
-                    contentContainerStyle={{paddingBottom: 40, flexGrow: 1}}
-                    showsVerticalScrollIndicator={false}
-                >
+			{/* Dashboard: Routines & Saved Workouts */}
+			<ScrollView 
+				style={styles.dashboardContainer} 
+				contentContainerStyle={{paddingBottom: 40, flexGrow: 1}}
+				showsVerticalScrollIndicator={false}
+			>
 					
                     {/* Active Routine Section */}
                     {activeRoutineObj && (
@@ -281,8 +281,7 @@ export default function Workout() {
                                                                     style={[styles.controlButtonPrimary, {flex: 1, alignItems: 'center', justifyContent: 'center'}]}
                                                                     onPress={() => {
                                                                         if (item?.type === 'workout' && item.workout) {
-                                                                            setExercises(item.workout.exercises || []);
-                                                                            Alert.alert("Loaded", "Workout loaded. Press Start below when ready!");
+                                                                            startWorkout(item.workout.exercises || []);
                                                                         } else {
                                                                              Alert.alert("Rest Day", "Enjoy your rest!", [
                                                                                  { text: "Mark Complete", onPress: () => markRoutineDayComplete() }
@@ -291,7 +290,7 @@ export default function Workout() {
                                                                     }}
                                                                 >
                                                                     <Text style={styles.controlTextPrimary}>
-                                                                        {item?.type === 'rest' ? 'Mark Complete' : 'Load Workout'}
+                                                                        {item?.type === 'rest' ? 'Mark Complete' : 'Start Workout'}
                                                                     </Text>
                                                                 </TouchableOpacity>
                                                                 
@@ -373,8 +372,7 @@ export default function Workout() {
                         />
                     )}
                     
-				</ScrollView>
-			)}
+			</ScrollView>
 
 			{/* Saved Workouts modal */}
 			<Modal visible={isWorkoutsListOpen} animationType="slide" transparent={true}>

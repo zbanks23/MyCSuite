@@ -13,7 +13,7 @@ interface ActiveWorkoutContextType {
     currentIndex: number;
     workoutName: string;
     setWorkoutName: (name: string) => void;
-    startWorkout: () => void;
+    startWorkout: (exercisesToStart?: Exercise[]) => void;
     pauseWorkout: () => void;
     resetWorkout: () => void;
     completeSet: (index: number, input?: { weight?: number; reps?: number; duration?: number; distance?: number }) => void;
@@ -124,11 +124,15 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
 
 
     // Actions
-    const startWorkout = useCallback(() => {
-		if (exercises.length === 0) {
+    const startWorkout = useCallback((exercisesToStart?: Exercise[]) => {
+        const targetExercises = exercisesToStart || exercises;
+		if (targetExercises.length === 0) {
 			Alert.alert("No exercises", "Please add at least one exercise.");
 			return;
 		}
+        if (exercisesToStart) {
+            setExercises(exercisesToStart);
+        }
 		setRunning(true);
         setHasActiveSession(true);
         setIsExpanded(true);
