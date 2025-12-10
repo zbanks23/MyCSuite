@@ -59,6 +59,7 @@ export function QuickUtilityButton() {
         // General workout tab logic (or home if '/' maps there)
          return [
             { id: 'create_routine', icon: 'list.bullet.clipboard', label: 'New Routine', action: 'create_routine' },
+            { id: 'saved_workouts', icon: 'folder', label: 'Workouts', route: '/saved-workouts' },
             { id: 'exercises', icon: 'dumbbell.fill', label: 'Exercises', route: '/exercises' },
             { id: 'log_weight', icon: 'scale.3d', label: 'Log Weight', action: 'log_weight' },
          ];
