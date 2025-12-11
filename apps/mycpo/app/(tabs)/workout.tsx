@@ -97,27 +97,14 @@ export default function Workout() {
         const r = routines.find((x) => x.id === id);
         if (!r) return;
 
-        // confirm
-        Alert.alert(
-            "Set Routine",
-            `Do you want to set '${r.name}' as your current routine?`,
-            [
-                { text: "Cancel", style: "cancel" },
-                { 
-                    text: "Set", 
-                    onPress: () => {
-                        startActiveRoutine(id);
-                        // Load day 1
-                        if (r.sequence && r.sequence.length > 0) {
-                            const first = r.sequence[0];
-                            if (first.type === 'workout' && first.workout) {
-                                setExercises(first.workout.exercises || []);
-                            }
-                        }
-                    }
-                }
-            ]
-        );
+        startActiveRoutine(id);
+        // Load day 1
+        if (r.sequence && r.sequence.length > 0) {
+            const first = r.sequence[0];
+            if (first.type === 'workout' && first.workout) {
+                setExercises(first.workout.exercises || []);
+            }
+        }
 	}
     
     // Derived state for current routine

@@ -674,7 +674,6 @@ export function useWorkoutManager() {
             id: routineId,
             dayIndex: 0,
         });
-        Alert.alert("Routine Set", "Good luck!");
     }
 
     const markRoutineDayComplete = useCallback(() => {
