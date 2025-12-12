@@ -57,6 +57,7 @@ export default function Workout() {
         isSaving, 
         
         activeRoutine,
+        startActiveRoutine,
         markRoutineDayComplete,
         clearActiveRoutine,
  
@@ -242,7 +243,7 @@ export default function Workout() {
                             renderItem={({item}) => (
                                 <RoutineCard 
                                     routine={item} 
-                                    onPress={() => router.push('/routines' as any)}
+                                    onPress={() => startActiveRoutine(item.id)}
                                     // onLongPress={() => deleteRoutine(item.id)} // Moved to routines screen
                                     // onDelete={() => deleteRoutine(item.id)} // Moved to routines screen
                                 />
