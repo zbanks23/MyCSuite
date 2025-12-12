@@ -54,7 +54,7 @@ export function RoutineCard({ routine, onPress, onLongPress, onDelete }: Routine
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.actionText}>Set Routine</Text>
+        <Text style={styles.actionText}>Set Active</Text>
       </View>
     </TouchableOpacity>
   );

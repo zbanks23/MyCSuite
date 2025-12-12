@@ -11,6 +11,7 @@ import { useColorScheme } from '../hooks/use-color-scheme';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { ActiveWorkoutProvider } from '../providers/ActiveWorkoutProvider'; // Fixed import path
+import { WorkoutManagerProvider } from '../providers/WorkoutManagerProvider';
 import { WorkoutStickyHeader } from '../components/ui/WorkoutStickyHeader';
 import { ActiveWorkoutOverlay } from '../components/workouts/ActiveWorkoutOverlay'; 
 import { QuickNavigationButton } from '../components/ui/QuickNavigationMenu';
@@ -78,19 +79,21 @@ export default function RootLayout() {
         <NavigationSettingsProvider>
           <AppThemeProvider>
             <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-              <ActiveWorkoutProvider>
-                <FloatingButtonProvider>
-                  <RootLayoutNav />
-                  <WorkoutStickyHeader />
-                  <ActiveWorkoutOverlay />
-                  <GlobalOverlay>
-                    <QuickNavigationButton />
-                    <QuickUtilityButton />
-                    <QuickBackButton />
-                  </GlobalOverlay>
-                </FloatingButtonProvider>
-                <StatusBar style="auto" />
-              </ActiveWorkoutProvider>
+              <WorkoutManagerProvider>
+                <ActiveWorkoutProvider>
+                  <FloatingButtonProvider>
+                    <RootLayoutNav />
+                    <WorkoutStickyHeader />
+                    <ActiveWorkoutOverlay />
+                    <GlobalOverlay>
+                      <QuickNavigationButton />
+                      <QuickUtilityButton />
+                      <QuickBackButton />
+                    </GlobalOverlay>
+                  </FloatingButtonProvider>
+                  <StatusBar style="auto" />
+                </ActiveWorkoutProvider>
+              </WorkoutManagerProvider>
             </ThemeProvider>
           </AppThemeProvider>
         </NavigationSettingsProvider>

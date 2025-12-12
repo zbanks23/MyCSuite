@@ -32,7 +32,7 @@ export default function RoutinesScreen() {
           }
       }
       
-      Alert.alert('Routine Started', `Routine '${name}' allows you to track your progress.`);
+      // Alert.alert('Routine Started', `Routine '${name}' allows you to track your progress.`);
       router.back();
   };
 
@@ -82,7 +82,7 @@ export default function RoutinesScreen() {
                         onPress={() => handleSetRoutine(item.id, item.name, item.sequence)} 
                         style={[styles.button, {backgroundColor: theme.primary}]}
                     >
-                        <ThemedText style={{color: '#fff', fontSize: 14, fontWeight: '600'}}>Start</ThemedText>
+                        <ThemedText style={{color: '#fff', fontSize: 14, fontWeight: '600'}}>Set Active</ThemedText>
                     </TouchableOpacity>
                     <TouchableOpacity 
                         onPress={() => handleDelete(item.id, item.name)} 
