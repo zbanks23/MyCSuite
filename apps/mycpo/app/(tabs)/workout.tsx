@@ -163,10 +163,10 @@ export default function Workout() {
 
 			{/* Controls Row */}
 			<View style={styles.controlsRow}>
-					<TouchableOpacity style={styles.controlButton} onPress={handleStartEmpty} accessibilityLabel="Start empty workout">
+					<TouchableOpacity style={[styles.controlButton, {flex: 1, marginRight: 0}]} onPress={handleStartEmpty} accessibilityLabel="Start empty workout">
 						<Text style={styles.controlText}>Start Empty</Text>
 					</TouchableOpacity>
-					<TouchableOpacity style={styles.controlButton} onPress={() => router.push('/workout-history' as any)} accessibilityLabel="History">
+					<TouchableOpacity style={[styles.controlButton, {flex: 1, marginRight: 0}]} onPress={() => router.push('/workout-history' as any)} accessibilityLabel="History">
 						<Text style={styles.controlText}>History</Text>
 					</TouchableOpacity>
 				</View>
