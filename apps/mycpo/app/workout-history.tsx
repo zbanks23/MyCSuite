@@ -16,6 +16,8 @@ import { useWorkoutManager } from '../hooks/useWorkoutManager';
 import { WorkoutDetailsModal } from '../components/workouts/WorkoutDetailsModal';
 import { IconSymbol } from '../components/ui/icon-symbol';
 
+import * as Haptics from 'expo-haptics';
+
 // Actions component that monitors drag distance
 const RightAction = ({ 
     dragX, 
@@ -43,6 +45,7 @@ const RightAction = ({
         (currentDrag) => {
             if (currentDrag < TRIGGER_THRESHOLD && !hasTriggered.value) {
                 hasTriggered.value = true;
+                runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
                 runOnJS(onDelete)();
             } else if (currentDrag > TRIGGER_THRESHOLD + 40 && hasTriggered.value) {
                 hasTriggered.value = false;
