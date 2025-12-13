@@ -2,54 +2,25 @@
 
 exports[`RadialMenu renders without crashing 1`] = `
 <View
+  className="items-center justify-center overflow-visible"
   pointerEvents="box-none"
   style={
     [
-      {
-        "alignItems": "center",
-        "justifyContent": "center",
-        "overflow": "visible",
-      },
       undefined,
       {
         "backgroundColor": "transparent",
-        "overflow": "visible",
       },
     ]
   }
 >
   <View
-    style={
-      [
-        {
-          "alignItems": "center",
-          "height": 52,
-          "justifyContent": "center",
-          "position": "absolute",
-          "width": 52,
-        },
-        {},
-      ]
-    }
+    className="absolute w-[52px] h-[52px] items-center justify-center"
+    style={{}}
   >
     <View
+      className="w-[52px] h-[52px] rounded-full items-center justify-center shadow-sm"
       style={
         [
-          {
-            "alignItems": "center",
-            "borderRadius": 26,
-            "elevation": 4,
-            "height": 52,
-            "justifyContent": "center",
-            "shadowColor": "#000",
-            "shadowOffset": {
-              "height": 2,
-              "width": 0,
-            },
-            "shadowOpacity": 0.2,
-            "shadowRadius": 3,
-            "width": 52,
-          },
           {
             "backgroundColor": "blue",
           },
@@ -64,16 +35,9 @@ exports[`RadialMenu renders without crashing 1`] = `
       />
     </View>
     <Text
+      className="absolute -top-7 text-xs font-semibold w-20 text-center"
       style={
         [
-          {
-            "fontSize": 12,
-            "fontWeight": "600",
-            "position": "absolute",
-            "textAlign": "center",
-            "top": -26,
-            "width": 80,
-          },
           {
             "color": "black",
           },
@@ -85,37 +49,13 @@ exports[`RadialMenu renders without crashing 1`] = `
     </Text>
   </View>
   <View
-    style={
-      [
-        {
-          "alignItems": "center",
-          "height": 52,
-          "justifyContent": "center",
-          "position": "absolute",
-          "width": 52,
-        },
-        {},
-      ]
-    }
+    className="absolute w-[52px] h-[52px] items-center justify-center"
+    style={{}}
   >
     <View
+      className="w-[52px] h-[52px] rounded-full items-center justify-center shadow-sm"
       style={
         [
-          {
-            "alignItems": "center",
-            "borderRadius": 26,
-            "elevation": 4,
-            "height": 52,
-            "justifyContent": "center",
-            "shadowColor": "#000",
-            "shadowOffset": {
-              "height": 2,
-              "width": 0,
-            },
-            "shadowOpacity": 0.2,
-            "shadowRadius": 3,
-            "width": 52,
-          },
           {
             "backgroundColor": "blue",
           },
@@ -130,16 +70,9 @@ exports[`RadialMenu renders without crashing 1`] = `
       />
     </View>
     <Text
+      className="absolute -top-7 text-xs font-semibold w-20 text-center"
       style={
         [
-          {
-            "fontSize": 12,
-            "fontWeight": "600",
-            "position": "absolute",
-            "textAlign": "center",
-            "top": -26,
-            "width": 80,
-          },
           {
             "color": "black",
           },
@@ -155,15 +88,9 @@ exports[`RadialMenu renders without crashing 1`] = `
       style={{}}
     >
       <View
+        className="absolute inset-0"
         style={
           [
-            {
-              "bottom": 0,
-              "left": 0,
-              "position": "absolute",
-              "right": 0,
-              "top": 0,
-            },
             {
               "backgroundColor": "gray",
               "borderRadius": 30,

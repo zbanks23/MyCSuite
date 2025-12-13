@@ -3,7 +3,7 @@ import {
     createExercise,
     Exercise,
     reorderSequence,
-} from "../app/(tabs)/workout.logic";
+} from "../utils/workout-logic";
 
 describe("Workout Logic", () => {
     describe("createExercise", () => {
@@ -34,13 +34,13 @@ describe("Workout Logic", () => {
             const { updatedExercises, nextIndex, shouldRest } =
                 calculateNextWorkoutState(mockExercises, 0);
             expect(updatedExercises[0].completedSets).toBe(1);
-            expect(nextIndex).toBe(0); // Still on first exercise
+            expect(nextIndex).toBe(0);
             expect(shouldRest).toBe(true);
         });
 
         it("should advance to next exercise when sets are complete", () => {
             const exercises = [
-                { ...mockExercises[0], completedSets: 1 }, // 1/2 done
+                { ...mockExercises[0], completedSets: 1 },
                 mockExercises[1],
             ];
             const { updatedExercises, nextIndex } = calculateNextWorkoutState(
@@ -48,20 +48,20 @@ describe("Workout Logic", () => {
                 0,
             );
             expect(updatedExercises[0].completedSets).toBe(2);
-            expect(nextIndex).toBe(1); // Moved to next
+            expect(nextIndex).toBe(1);
         });
 
         it("should stay on last exercise when workout is done", () => {
             const exercises = [
                 mockExercises[0],
-                { ...mockExercises[1], completedSets: 0 }, // 0/1 done
+                { ...mockExercises[1], completedSets: 0 },
             ];
             const { updatedExercises, nextIndex } = calculateNextWorkoutState(
                 exercises,
                 1,
             );
             expect(updatedExercises[1].completedSets).toBe(1);
-            expect(nextIndex).toBe(1); // Stay on last
+            expect(nextIndex).toBe(1);
         });
     });
 

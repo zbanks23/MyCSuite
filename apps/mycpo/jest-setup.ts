@@ -1,16 +1,13 @@
-// Define globals required by React Native
+import "@testing-library/jest-native/extend-expect";
+
 (global as any).__DEV__ = true;
 
-// import "@testing-library/jest-native/extend-expect";
-
-// Mock expo-secure-store
 jest.mock("expo-secure-store", () => ({
     getItemAsync: jest.fn(),
     setItemAsync: jest.fn(),
     deleteItemAsync: jest.fn(),
 }));
 
-// Mock the auth package to avoid Supabase initialization errors
 jest.mock("@mycsuite/auth", () => ({
     supabase: {
         auth: {

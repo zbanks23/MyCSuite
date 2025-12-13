@@ -24,12 +24,21 @@ const TestComponent = () => {
                     <Text>{ex.name}: {ex.completedSets}/{ex.sets}</Text>
                 </View>
             ))}
-            <Button title="Start" onPress={startWorkout} />
+            <Button title="Start" onPress={() => startWorkout(([] as any))} />
             <Button title="Add Ex" onPress={() => addExercise('New Ex', '3', '12')} />
-            <Button title="Complete Set" onPress={completeSet} />
+            <Button title="Complete Set" onPress={() => completeSet((0 as any))} />
         </View>
     );
 };
+
+
+// Mock logic
+jest.mock('../providers/WorkoutManagerProvider', () => ({
+    useWorkoutManager: () => ({
+        saveCompletedWorkout: jest.fn(),
+        createCustomExercise: jest.fn(),
+    })
+}));
 
 describe('ActiveWorkoutProvider', () => {
     // Mock Alert
@@ -72,7 +81,6 @@ describe('ActiveWorkoutProvider', () => {
                 <TestComponent />
             </ActiveWorkoutProvider>
         );
-        // First exercise is Push Ups, 0/3
         const firstEx = getByTestId('exercise-0');
         expect(firstEx).toHaveTextContent('Push Ups: 0/3');
 

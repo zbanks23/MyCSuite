@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ThemedCard renders correctly with title 1`] = `
+<View
+  className="p-3 rounded-[10px] my-2 border shadow-sm bg-surface dark:bg-surface_dark border-surface dark:border-white/10"
+>
+  <Text
+    className="text-base font-bold mb-1 text-apptext dark:text-apptext_dark"
+  >
+    Test Card
+  </Text>
+</View>
+`;
+
+exports[`ThemedCard renders correctly with title and subtitle 1`] = `
+<View
+  className="p-3 rounded-[10px] my-2 border shadow-sm bg-surface dark:bg-surface_dark border-surface dark:border-white/10"
+>
+  <Text
+    className="text-base font-bold mb-1 text-apptext dark:text-apptext_dark"
+  >
+    Test Card
+  </Text>
+  <Text
+    className="text-sm text-gray-500 dark:text-gray-400"
+  >
+    Subtitle
+  </Text>
+</View>
+`;
