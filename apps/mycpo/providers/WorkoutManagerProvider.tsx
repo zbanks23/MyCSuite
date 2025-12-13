@@ -15,12 +15,7 @@ export type Exercise = {
     sets: number; // Target sets
     reps: number; // Target reps
 
-    // Legacy support? Or replace?
-    // We'll keep completedSets as a derived getter or simple counter if needed, but primary is logs.
-    completedSets: number;
-
-    logs?: SetLog[]; // Array of completed set details
-    type?: "reps" | "duration" | "bodyweight"; // Determines input type
+    type?: "reps" | "duration" | "bodyweight";
 };
 
 export type WorkoutLog = {
@@ -33,7 +28,7 @@ export type WorkoutLog = {
     createdAt: string;
 };
 
-// --- Helper / API Functions (Outside Hook) ---
+
 
 
 
@@ -103,8 +98,7 @@ export async function fetchExercises(user: any) {
     if (!user) return { data: [], error: null };
 
     // Fetch user specific exercises
-    // Note: If you have a 'global' exercises table or rows with user_id is null, handle that here.
-    // For now assuming we just want user's exercises or RLS handles it.
+    // Fetch user specific exercises
     const { data, error } = await supabase
         .from("exercises")
         .select("exercise_id, exercise_name, exercise_type")
@@ -304,7 +298,7 @@ async function persistUpdateSavedWorkoutToSupabase(
     return { data };
 }
 
-// --- Context ---
+
 
 interface WorkoutManagerContextType {
     savedWorkouts: any[];
@@ -324,9 +318,6 @@ interface WorkoutManagerContextType {
     saveRoutineDraft: (name: string, sequence: any[], onSuccess: () => void) => Promise<void>;
     updateRoutine: (id: string, name: string, sequence: any[], onSuccess: () => void) => Promise<void>;
     deleteRoutine: (id: string, onSuccess?: () => void) => void;
-    workoutHistory: WorkoutLog[];
-    fetchWorkoutLogDetails: (logId: string) => Promise<{ data: any[], error: any }>;
-    saveCompletedWorkout: (name: string, exercises: Exercise[], duration: number, onSuccess?: () => void) => Promise<void>;
     createCustomExercise: (name: string, type: string) => Promise<{ data?: any, error?: any }>;
 }
 

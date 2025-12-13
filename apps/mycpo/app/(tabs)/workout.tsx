@@ -31,7 +31,7 @@ import { ActiveRoutineCard } from '../../components/workouts/ActiveRoutineCard';
 
 import { useFloatingButton } from '../../providers/FloatingButtonContext';
 
-// --- Component ---
+
 
 export default function Workout() {
 
@@ -116,7 +116,7 @@ export default function Workout() {
         updateRoutine,
         deleteRoutine,
         updateSavedWorkout,
-        saveWorkout, // Added saveWorkout
+        saveWorkout,
     } = useWorkoutManager();
 
     // Toggle floating buttons visibility when modals are open
@@ -521,8 +521,6 @@ export default function Workout() {
                                     routine={item} 
                                     onPress={() => startActiveRoutine(item.id)}
                                     onEdit={() => handleEditRoutine(item)}
-                                    // onLongPress={() => deleteRoutine(item.id)} // Moved to routines screen
-                                    // onDelete={() => deleteRoutine(item.id)} // Moved to routines screen
                                 />
                             )}
                         />
