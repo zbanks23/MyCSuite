@@ -412,7 +412,12 @@ export default function Workout() {
                          </View>
                     </View>
                      {savedWorkouts.length === 0 ? (
-                        <Text className="text-gray-500 dark:text-gray-400">No saved workouts.</Text>
+                        <View className="p-4 items-center justify-center border border-dashed border-surface dark:border-surface_dark rounded-xl">
+                            <Text className="text-gray-500 dark:text-gray-400 mb-2">No saved workouts.</Text>
+                            <TouchableOpacity onPress={handleCreateSavedWorkout} className="p-2.5 rounded-lg border border-surface dark:border-surface_dark bg-background dark:bg-background_dark">
+                                <Text className="text-apptext dark:text-apptext_dark">Create a Workout</Text>
+                            </TouchableOpacity>
+                        </View>
                     ) : (
 						<FlatList
 							data={savedWorkouts}
