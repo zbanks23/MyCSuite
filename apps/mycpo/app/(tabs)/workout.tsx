@@ -78,6 +78,7 @@ export default function Workout() {
 
 	const [isCreateRoutineOpen, setCreateRoutineOpen] = useState(false);
     const [editingRoutineId, setEditingRoutineId] = useState<string | null>(null);
+    const [expandedWorkoutId, setExpandedWorkoutId] = useState<string | null>(null);
 	const [routineDraftName, setRoutineDraftName] = useState("");
 	const [routineSequence, setRoutineSequence] = useState<any[]>([]);
 	const [isWorkoutsListOpen, setWorkoutsListOpen] = useState(false);
@@ -273,14 +274,16 @@ export default function Workout() {
 							data={savedWorkouts}
 							scrollEnabled={false}
 							keyExtractor={(i) => i.id}
-							renderItem={({item}) => (
+							renderItem={({item}) => {
+                                const isExpanded = expandedWorkoutId === item.id;
+                                return (
 								<View 
-									className="bg-surface dark:bg-surface_dark rounded-xl p-4 mb-3 border border-black/5 dark:border-white/10 shadow-sm"
+									className="bg-surface dark:bg-surface_dark rounded-xl mb-3 border border-black/5 dark:border-white/10 shadow-sm overflow-hidden"
 								>
-                                    <View className="flex-row justify-between items-center mb-0">
+                                    <View className={`flex-row justify-between items-center p-4 ${isExpanded ? 'border-b border-black/5 dark:border-white/10' : ''}`}>
                                         <TouchableOpacity 
                                             className="flex-1 mr-2"
-                                            onPress={() => loadWorkout(item.id)}
+                                            onPress={() => setExpandedWorkoutId(isExpanded ? null : item.id)}
                                         >
                                             <Text className="font-semibold text-apptext dark:text-apptext_dark text-lg mb-1" numberOfLines={1}>{item.name}</Text>
                                             <Text className="text-gray-500 dark:text-gray-400 text-sm">{item.exercises?.length || 0} Exercises</Text>
@@ -289,12 +292,11 @@ export default function Workout() {
                                         <View className="flex-row items-center gap-2">
                                             <TouchableOpacity 
                                                 onPress={() => {
-                                                    console.log("Edit button pressed for:", item.name);
                                                     handleEditSavedWorkout(item);
                                                 }}
-                                                className="bg-primary dark:bg-primary_dark px-4 py-2 rounded-lg"
+                                                className="bg-primary/10 dark:bg-primary/20 px-4 py-2 rounded-lg"
                                             >
-                                                <Text className="text-white font-semibold">Edit</Text>
+                                                <Text className="text-primary dark:text-primary_dark font-semibold">Edit</Text>
                                             </TouchableOpacity>
 
                                             <TouchableOpacity 
@@ -305,8 +307,23 @@ export default function Workout() {
                                             </TouchableOpacity>
                                         </View>
                                     </View>
+                                    
+                                    {isExpanded && (
+                                        <View className="bg-background/50 dark:bg-background_dark/50 px-4 py-2">
+                                            {item.exercises && item.exercises.length > 0 ? (
+                                                item.exercises.map((ex: any, idx: number) => (
+                                                    <View key={idx} className="py-2 flex-row justify-between border-b border-black/5 dark:border-white/5 last:border-0">
+                                                        <Text className="text-apptext dark:text-apptext_dark font-medium">{ex.name}</Text>
+                                                        <Text className="text-gray-500 dark:text-gray-400 text-sm">{ex.sets} x {ex.reps}</Text>
+                                                    </View>
+                                                ))
+                                            ) : (
+                                                <Text className="text-gray-500 dark:text-gray-400 py-2 italic text-center">No exercises</Text>
+                                            )}
+                                        </View>
+                                    )}
 								</View>
-							)}
+							)}}
 						/>
                     )}
 
