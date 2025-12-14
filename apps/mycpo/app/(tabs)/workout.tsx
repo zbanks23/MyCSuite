@@ -755,6 +755,7 @@ export default function Workout() {
                                         ListEmptyComponent={
                                             <Text className="text-center text-gray-500 mt-4">No exercises found.</Text>
                                         }
+                                        showsVerticalScrollIndicator={false}
                                     />
                                 )}
                             </View>

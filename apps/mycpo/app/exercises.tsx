@@ -92,6 +92,7 @@ export default function ExercisesScreen() {
                 <ThemedText style={{color: theme.icon}}>No exercises found.</ThemedText>
             </View>
         }
+        showsVerticalScrollIndicator={false}
       />
       )}
     </ThemedView>
