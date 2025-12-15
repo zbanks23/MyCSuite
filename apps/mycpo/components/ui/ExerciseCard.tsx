@@ -157,10 +157,10 @@ const SetRow = ({ index, exercise, onCompleteSet, onUncompleteSet, onUpdateSetTa
                             textAlignVertical="center"
                         />
                         <TouchableOpacity 
-                            className="w-9 h-9 rounded-lg bg-primary dark:bg-primary_dark items-center justify-center ml-1"
+                            className="w-7 h-7 rounded-lg bg-primary dark:bg-primary_dark items-center justify-center ml-1"
                             onPress={() => onUncompleteSet?.(index)}
                         >
-                             <IconSymbol name="checkmark" size={20} color="#fff" />
+                             <IconSymbol name="checkmark" size={16} color="#fff" />
                         </TouchableOpacity>
                       </>
                  ) : (
@@ -184,13 +184,13 @@ const SetRow = ({ index, exercise, onCompleteSet, onUncompleteSet, onUpdateSetTa
                             textAlignVertical="center"
                         />
                         <TouchableOpacity 
-                            className={`w-9 h-9 rounded-lg items-center justify-center ml-1 border-2 border-primary dark:border-primary_dark`}
+                            className={`w-7 h-7 rounded-lg items-center justify-center ml-1 border-2 border-primary dark:border-primary_dark`}
                             onPress={() => onCompleteSet({ 
                                 weight: getValue('weight'), 
                                 reps: getValue('reps') || exercise.reps.toString() 
                             })}
                         >
-                            <IconSymbol name="checkmark" size={20} color={theme.primary} />
+                            <IconSymbol name="checkmark" size={16} color={theme.primary} />
                         </TouchableOpacity>
                       </>
                  )}
