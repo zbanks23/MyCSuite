@@ -41,7 +41,7 @@ export function ExerciseCard({ exercise, isCurrent, onCompleteSet, onUncompleteS
     };
 
     return (
-        <View className={`bg-surface dark:bg-surface_dark rounded-2xl p-4 mb-3 w-full ${isCurrent ? 'border-2 border-primary dark:border-primary_dark' : ''}`}>
+        <View className={`bg-surface dark:bg-surface_dark rounded-2xl p-4 mb-3 w-full`}>
 
             <View className="flex-row justify-between items-center mb-4">
                 <View>
@@ -49,11 +49,6 @@ export function ExerciseCard({ exercise, isCurrent, onCompleteSet, onUncompleteS
                     <Text className="text-sm text-gray-500">Target: {exercise.sets} sets • {exercise.reps} reps</Text>
                 </View>
                 {isFinished && <IconSymbol name="checkmark.circle.fill" size={24} color={theme.primary} />}
-                {isCurrent && !isFinished && (
-                    <View className="bg-primary dark:bg-primary_dark px-2 py-1 rounded-lg ml-2">
-                        <Text className="text-white text-[10px] font-bold">CURRENT</Text>
-                    </View>
-                )}
             </View>
 
             <View className="pt-3">
