@@ -75,23 +75,20 @@ const CardSwipeAction = ({
         let w = BUTTON_HEIGHT;
         let borderRadius = BUTTON_HEIGHT / 2;
         
-        // If drag is deeper than the layout width + a buffer, start expanding
-        const EXPANSION_START = LAYOUT_WIDTH + 10;
-        
-        if (absDrag > EXPANSION_START) {
-            if (drag < TRIGGER_THRESHOLD + 20) {
-                 w = Math.max(absDrag - MARGIN, BUTTON_HEIGHT);
-            }
+        // Only expand if we have dragged past the full layout width (overshoot)
+        // This prevents the red button from covering the Edit button during normal swipe
+        if (absDrag > LAYOUT_WIDTH) {
+             w = BUTTON_HEIGHT + (absDrag - LAYOUT_WIDTH);
         }
 
         const scale = interpolate(
             drag,
-            [-50, 0], // Quick pop in
+            [-50, 0], 
             [1, 0], 
             Extrapolation.CLAMP
-        ); // delete appears fast
+        );
 
-        // Fade in
+        // Fade in entire button
         const opacity = interpolate(
             drag,
             [-50, -10],
@@ -148,22 +145,24 @@ const CardSwipeAction = ({
         return { transform: [{ scale }] };
     });
 
-    const deleteTextStyle = useAnimatedStyle(() => {
-         const scale = interpolate(
-            dragX.value,
-            [-50, 0],
-            [1, 0], 
-            Extrapolation.CLAMP
-        );
-        const opacity = interpolate(
-            dragX.value,
-            [-50, -20],
-            [1, 0],
-            Extrapolation.CLAMP
-        );
+
+
+    const deleteLabelStyle = useAnimatedStyle(() => {
+        const drag = dragX.value;
+        const absDrag = Math.abs(drag);
+        
+        let translateX = 0;
+        
+        // Calculate how much the button has expanded beyond its initial size
+        // The button exapnds to the left, so we need to move the text to the left by half that amount to stay centered
+        if (absDrag > LAYOUT_WIDTH) {
+             const expansion = absDrag - LAYOUT_WIDTH;
+             translateX = -expansion / 2;
+        }
+
         return {
-            opacity,
-            transform: [{ scale }]
+            transform: [{ translateX }],
+            // Removed opacity fade as requested - text remains visible
         };
     });
 
@@ -200,26 +199,30 @@ const CardSwipeAction = ({
              )}
 
              {/* Delete Button Wrapper */}
-            <View style={{ marginRight: MARGIN, alignItems: 'center' }}>
-                <Animated.View 
-                    className="bg-red-500 justify-center items-center" 
-                    style={[deleteStyle, { position: 'absolute', right: 0 }]} 
-                >
-                     <View style={{ width: BUTTON_HEIGHT, height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <TouchableOpacity onPress={onDelete} activeOpacity={0.8}>
+            <View style={{ marginRight: MARGIN, alignItems: 'center', justifyContent: 'center' }}>
+                {/* 
+                    Top part: The Button Anchor. 
+                    We use a relative container of 40x40 to match the Edit button's circle slot.
+                    The Expanding Red Blob is absolute positioned inside this anchor so it grows from right-to-left 
+                    without breaking the layout or alignment.
+                */}
+                <View style={{ width: BUTTON_HEIGHT, height: BUTTON_HEIGHT, position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
+                     <Animated.View 
+                        className="bg-red-500 overflow-hidden" 
+                        style={[deleteStyle, { position: 'absolute', right: 0 }]} 
+                    >
+                        <TouchableOpacity onPress={onDelete} activeOpacity={0.8} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                             <Animated.View style={[deleteIconStyle]}>
                                 <IconSymbol name="trash.fill" size={16} color="white" />
                             </Animated.View>
                         </TouchableOpacity>
-                    </View>
-                </Animated.View>
+                    </Animated.View>
+                </View>
                 
-                {/* Placeholder for layout */}
-                 <View style={{ width: BUTTON_HEIGHT, height: BUTTON_HEIGHT }} pointerEvents="none" />
-                 
+                {/* Bottom part: The Label. visible in static state, hidden in expansion */}
                 <Animated.Text 
                     className="text-gray-500 dark:text-gray-400 text-[10px] font-semibold mt-1"
-                    style={[deleteTextStyle]} 
+                    style={[deleteLabelStyle]}
                 >
                     Trash
                 </Animated.Text>
