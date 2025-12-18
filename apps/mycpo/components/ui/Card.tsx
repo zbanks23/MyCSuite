@@ -113,6 +113,12 @@ const CardSwipeAction = ({
         if (!hasEdit) return { opacity: 0 };
 
         const drag = dragX.value;
+        const absDrag = Math.abs(drag);
+        
+        let translateX = 0;
+        if (absDrag > LAYOUT_WIDTH) {
+             translateX = -(absDrag - LAYOUT_WIDTH);
+        }
         
          const scale = interpolate(
             drag,
@@ -130,7 +136,7 @@ const CardSwipeAction = ({
         const isDeleting = drag < TRIGGER_THRESHOLD;
 
         return {
-            transform: [{ scale }],
+            transform: [{ translateX }, { scale }],
             opacity: isDeleting ? 0 : opacity,
         };
     });
