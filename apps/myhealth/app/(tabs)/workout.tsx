@@ -167,7 +167,7 @@ export default function Workout() {
             <Card 
                 onPress={onPress}
                 activeOpacity={0.9}
-                className="overflow-hidden p-0 mb-0 border border-black/5 dark:border-white/10"
+                className="p-0 mb-0 border border-black/5 dark:border-white/10"
                 onDelete={onDelete}
                 onEdit={onEdit}
             >
@@ -191,7 +191,7 @@ export default function Workout() {
                 </View>
                 
                 {isExpanded && (
-                    <View className="bg-background/50 dark:bg-background_dark/50 px-4 py-2">
+                    <View className="bg-background/50 dark:bg-background_dark/50 px-4 py-2 rounded-b-xl">
                         {item.exercises && item.exercises.length > 0 ? (
                             item.exercises.map((ex: any, idx: number) => (
                                 <View key={idx} className="py-2 flex-row justify-between border-b border-black/5 dark:border-white/5 last:border-0">
