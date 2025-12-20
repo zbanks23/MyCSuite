@@ -7,6 +7,7 @@ export type SetLog = {
     weight?: number;
     reps?: number;
     duration?: number; // seconds
+    distance?: number;
 };
 
 export type Exercise = {
@@ -194,9 +195,11 @@ async function persistCompletedWorkoutToSupabase(
         .from("workout_logs")
         .insert([{
             user_id: user.id,
-            workout_id: workoutId || null,
+            // workout_id is removed
             workout_time: new Date().toISOString(),
-            notes: JSON.stringify(notesObj),
+            exercises: JSON.stringify(notesObj), // Renamed from notes
+            workout_name: name, // New column
+            duration: duration, // New column
         }])
         .select()
         .single();
@@ -220,6 +223,7 @@ async function persistCompletedWorkoutToSupabase(
                         exercise_id: ex.id,
                         set_number: index + 1
                     },
+                    exercise_id: ex.id, // New column
                     created_at: new Date().toISOString()
                 });
             });

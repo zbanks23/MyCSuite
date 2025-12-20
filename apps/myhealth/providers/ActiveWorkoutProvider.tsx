@@ -169,7 +169,8 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
                         id: Date.now().toString(),
                         weight,
                         reps: finalReps,
-                        // duration...
+                        duration: input?.duration,
+                        distance: input?.distance,
                     };
 
                     return { 
