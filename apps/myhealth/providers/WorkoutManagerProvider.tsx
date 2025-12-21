@@ -186,14 +186,26 @@ export async function fetchExercises(user: any) {
     return { data: mapped, error: null };
 }
 
+// Fetch all available muscle groups
+export async function fetchMuscleGroups() {
+    const { data, error } = await supabase
+        .from("muscle_groups")
+        .select("*")
+        .order("name", { ascending: true });
+    return { data, error };
+}
+
 async function createCustomExerciseInSupabase(
     user: any,
     name: string,
     type: string = "bodyweight_reps",
+    primaryMuscle?: string,
+    secondaryMuscles?: string[]
 ) {
     if (!user) return { error: "User not logged in" };
 
-    const { data, error } = await supabase
+    // 1. Create Exercise
+    const { data: exerciseData, error: exerciseError } = await supabase
         .from("exercises")
         .insert([{
             exercise_name: name.trim(),
@@ -203,7 +215,53 @@ async function createCustomExerciseInSupabase(
         .select()
         .single();
 
-    return { data, error };
+    if (exerciseError || !exerciseData) return { data: null, error: exerciseError };
+
+    // 2. Link Muscle Groups
+    const muscleInserts: any[] = [];
+    
+    // We need to fetch muscle group IDs for the names provided
+    // Ideally we pass IDs from the frontend, but if names, we resolve them.
+    // Let's assume frontend passes IDs since we will switch to dropdowns relying on fetchMuscleGroups.
+    // Or if names, we'd need a lookup. Let's assume IDs or names that strictly match.
+    // Given the UI plan, we should fetch muscle groups first and pass their IDs.
+    
+    // However, if we want to be robust to mismatched names, let's fetch IDs for the provided strings if they look like names.
+    // For now, let's assume the frontend will pass the correct ID if we provide it.
+    
+    if (primaryMuscle) {
+        muscleInserts.push({
+            exercise_id: exerciseData.exercise_id,
+            muscle_group_id: primaryMuscle,
+            role: 'primary'
+        });
+    }
+
+    if (secondaryMuscles && secondaryMuscles.length > 0) {
+        secondaryMuscles.forEach(mId => {
+            // Avoid duplicate primary
+            if (mId !== primaryMuscle) {
+                muscleInserts.push({
+                    exercise_id: exerciseData.exercise_id,
+                    muscle_group_id: mId,
+                    role: 'secondary'
+                });
+            }
+        });
+    }
+
+    if (muscleInserts.length > 0) {
+        const { error: muscleError } = await supabase
+            .from("exercise_muscle_groups")
+            .insert(muscleInserts);
+        
+        if (muscleError) {
+             console.warn("Failed to link muscle groups", muscleError);
+             // We don't fail the whole creation, just warn
+        }
+    }
+
+    return { data: exerciseData, error: null };
 }
 
 async function persistCompletedWorkoutToSupabase(
@@ -436,7 +494,7 @@ interface WorkoutManagerContextType {
     saveRoutineDraft: (name: string, sequence: any[], onSuccess: () => void) => Promise<void>;
     updateRoutine: (id: string, name: string, sequence: any[], onSuccess: () => void) => Promise<void>;
     deleteRoutine: (id: string, onSuccess?: () => void) => void;
-    createCustomExercise: (name: string, type: string) => Promise<{ data?: any, error?: any }>;
+    createCustomExercise: (name: string, type: string, primary?: string, secondary?: string[]) => Promise<{ data?: any, error?: any }>;
     workoutHistory: WorkoutLog[];
     fetchWorkoutLogDetails: (logId: string) => Promise<{ data: any[], error: any }>;
     saveCompletedWorkout: (name: string, exercises: Exercise[], duration: number, onSuccess?: () => void, note?: string) => Promise<void>;
@@ -1079,8 +1137,8 @@ export function WorkoutManagerProvider({ children }: { children: React.ReactNode
         fetchWorkoutLogDetails,
         saveCompletedWorkout,
         deleteWorkoutLog,
-        createCustomExercise: async (name: string, type: string) => {
-            return createCustomExerciseInSupabase(user, name, type);
+        createCustomExercise: async (name: string, type: string, primary?: string, secondary?: string[]) => {
+            return createCustomExerciseInSupabase(user, name, type, primary, secondary);
         },
     };
 

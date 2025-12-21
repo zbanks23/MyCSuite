@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
-import { TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, View, Modal, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedView } from '../components/ui/ThemedView';
 import { ThemedText } from '../components/ui/ThemedText';
+import { IconSymbol } from '../components/ui/icon-symbol';
 import { useUITheme } from '@mycsuite/ui';
-import { useWorkoutManager } from '../hooks/useWorkoutManager';
+import { useWorkoutManager, fetchMuscleGroups } from '../hooks/useWorkoutManager';
+
+const EXERCISE_TYPES = [
+    { label: 'Weight & Reps', value: 'weight_reps' },
+    { label: 'Bodyweight Reps', value: 'bodyweight_reps' },
+    { label: 'Weighted Bodyweight', value: 'weighted_bodyweight' },
+    { label: 'Duration', value: 'duration' },
+    { label: 'Distance', value: 'distance' },
+];
 
 export default function CreateExerciseScreen() {
   const router = useRouter();
@@ -12,23 +21,47 @@ export default function CreateExerciseScreen() {
   const { createCustomExercise } = useWorkoutManager();
   
   const [name, setName] = useState('');
-  const [category, setCategory] = useState('General');
+  const [type, setType] = useState(EXERCISE_TYPES[0]);
+  const [muscleGroups, setMuscleGroups] = useState<any[]>([]);
+  const [primaryMuscle, setPrimaryMuscle] = useState<any>(null);
+  const [secondaryMuscles, setSecondaryMuscles] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Modal States
+  const [showTypeModal, setShowTypeModal] = useState(false);
+  const [showPrimaryModal, setShowPrimaryModal] = useState(false);
+  const [showSecondaryModal, setShowSecondaryModal] = useState(false);
+
+  useEffect(() => {
+    loadMuscleGroups();
+  }, []);
+
+  const loadMuscleGroups = async () => {
+    const { data } = await fetchMuscleGroups();
+    if (data) {
+        setMuscleGroups(data);
+        // Default primary to something if available, or keep null
+    }
+  };
 
   const handleCreate = async () => {
     if (!name.trim()) {
         Alert.alert('Error', 'Please enter an exercise name');
         return;
     }
+    if (!primaryMuscle) {
+        Alert.alert('Error', 'Please select a primary muscle group');
+        return;
+    }
 
     setIsSubmitting(true);
     try {
-        const { error } = await createCustomExercise(name, category);
+        const secondaryIds = secondaryMuscles.map(m => m.id);
+        const { error } = await createCustomExercise(name, type.value, primaryMuscle.id, secondaryIds);
         if (error) {
             Alert.alert('Error', 'Failed to create exercise');
             console.error(error);
         } else {
-            // Success
             router.back();
         }
     } catch (e) {
@@ -38,6 +71,61 @@ export default function CreateExerciseScreen() {
         setIsSubmitting(false);
     }
   };
+
+  const toggleSecondaryMuscle = (muscle: any) => {
+    if (secondaryMuscles.some(m => m.id === muscle.id)) {
+        setSecondaryMuscles(prev => prev.filter(m => m.id !== muscle.id));
+    } else {
+        setSecondaryMuscles(prev => [...prev, muscle]);
+    }
+  };
+
+  // Selection Modal Component
+  const renderSelectionModal = (
+      visible: boolean, 
+      onClose: () => void, 
+      title: string, 
+      items: any[], 
+      onSelect: (item: any) => void,
+      isSelected: (item: any) => boolean,
+      multiSelect = false
+  ) => (
+      <Modal
+          visible={visible}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={onClose}
+      >
+          <ThemedView className="flex-1">
+              <View className="flex-row items-center justify-between p-4 border-b border-surface dark:border-white/10 pt-4 android:pt-10">
+                  <TouchableOpacity onPress={onClose} className="p-2">
+                       <ThemedText type="link">Done</ThemedText>
+                  </TouchableOpacity>
+                  <ThemedText type="subtitle">{title}</ThemedText>
+                  <View style={{ width: 50 }} />
+              </View>
+              <FlatList
+                  data={items}
+                  keyExtractor={(item) => item.value || item.id}
+                  renderItem={({ item }) => {
+                      const selected = isSelected(item);
+                      return (
+                          <TouchableOpacity 
+                              className={`flex-row items-center justify-between p-4 border-b border-surface dark:border-white/5 ${selected ? 'bg-primary/10 dark:bg-primary/20' : ''}`}
+                              onPress={() => {
+                                  onSelect(item);
+                                  if (!multiSelect) onClose();
+                              }}
+                          >
+                              <ThemedText type="defaultSemiBold">{item.label || item.name}</ThemedText>
+                              {selected && <IconSymbol name="checkmark" size={20} color={theme.primary} />}
+                          </TouchableOpacity>
+                      );
+                  }}
+              />
+          </ThemedView>
+      </Modal>
+  );
 
   return (
     <ThemedView className="flex-1">
@@ -63,23 +151,77 @@ export default function CreateExerciseScreen() {
                 placeholderTextColor={theme.icon}
                 value={name}
                 onChangeText={setName}
-                autoFocus
             />
         </View>
 
         <View className="mb-6">
             <ThemedText type="defaultSemiBold" className="mb-2">Category</ThemedText>
-            {/* Simple text input for now, could be a picker */}
-            <TextInput 
-                className="bg-surface dark:bg-surface_dark text-apptext dark:text-apptext_dark p-4 rounded-xl text-base border border-transparent dark:border-white/10"
-                placeholder="e.g. Chest, Legs, etc." 
-                placeholderTextColor={theme.icon}
-                value={category}
-                onChangeText={setCategory}
-            />
+            <TouchableOpacity 
+                onPress={() => setShowTypeModal(true)}
+                className="bg-surface dark:bg-surface_dark p-4 rounded-xl border border-transparent dark:border-white/10 flex-row justify-between items-center"
+            >
+                <ThemedText>{type.label}</ThemedText>
+                <IconSymbol name="chevron.right" size={16} color={theme.icon || '#888'} />
+            </TouchableOpacity>
+        </View>
+
+        <View className="mb-6">
+            <ThemedText type="defaultSemiBold" className="mb-2">Primary Muscle Group</ThemedText>
+            <TouchableOpacity 
+                onPress={() => setShowPrimaryModal(true)}
+                className="bg-surface dark:bg-surface_dark p-4 rounded-xl border border-transparent dark:border-white/10 flex-row justify-between items-center"
+            >
+                <ThemedText>{primaryMuscle ? primaryMuscle.name : 'Select Primary Muscle'}</ThemedText>
+                <IconSymbol name="chevron.right" size={16} color={theme.icon || '#888'} />
+            </TouchableOpacity>
+        </View>
+
+        <View className="mb-6">
+            <ThemedText type="defaultSemiBold" className="mb-2">Secondary Muscle Groups</ThemedText>
+            <TouchableOpacity 
+                onPress={() => setShowSecondaryModal(true)}
+                className="bg-surface dark:bg-surface_dark p-4 rounded-xl border border-transparent dark:border-white/10 flex-row justify-between items-center"
+            >
+                <ThemedText numberOfLines={1}>
+                    {secondaryMuscles.length > 0 
+                        ? secondaryMuscles.map(m => m.name).join(', ') 
+                        : 'Select Secondary Muscles (Optional)'}
+                </ThemedText>
+                <IconSymbol name="chevron.right" size={16} color={theme.icon || '#888'} />
+            </TouchableOpacity>
         </View>
 
       </KeyboardAvoidingView>
+
+      {/* Modals */}
+      {renderSelectionModal(
+          showTypeModal, 
+          () => setShowTypeModal(false), 
+          "Select Category", 
+          EXERCISE_TYPES, 
+          setType,
+          (item) => item.value === type.value
+      )}
+
+      {renderSelectionModal(
+          showPrimaryModal, 
+          () => setShowPrimaryModal(false), 
+          "Select Primary Muscle", 
+          muscleGroups, 
+          setPrimaryMuscle,
+          (item) => item.id === primaryMuscle?.id
+      )}
+
+      {renderSelectionModal(
+          showSecondaryModal, 
+          () => setShowSecondaryModal(false), 
+          "Select Secondary Muscles", 
+          muscleGroups.filter(m => m.id !== primaryMuscle?.id), // Exclude primary
+          toggleSecondaryMuscle,
+          (item) => secondaryMuscles.some(m => m.id === item.id),
+          true
+      )}
+
     </ThemedView>
   );
 }
