@@ -64,6 +64,7 @@ export default function Workout() {
 
     const [expandedWorkoutId, setExpandedWorkoutId] = useState<string | null>(null);
     const [previewWorkout, setPreviewWorkout] = useState<SavedWorkout | null>(null);
+    const [routineViewMode, setRoutineViewMode] = useState<'next_3' | 'next_7' | 'week'>('week');
 
     const { 
         savedWorkouts, 
@@ -88,10 +89,14 @@ export default function Workout() {
 
         const result = [];
         // Show up to 7 visible days (skipping future rest days)
-        let count = 0;
         let i = 0;
+        
+        // Limits based on mode
+        const countLimit = routineViewMode === 'next_3' ? 3 : routineViewMode === 'next_7' ? 7 : 7; // Week uses day limit, not count limit primarily
+        const dayLimit = routineViewMode === 'week' ? 7 : 30; // Next 3/7 look ahead further
+
         // Safety break at 30 days to prevent infinite loops if routine is weird
-        while (count < 7 && i < 30) {
+        while (result.length < countLimit && i < dayLimit) {
             const index = (dayIndex + i) % total;
             const item = seq[index];
             
@@ -104,12 +109,11 @@ export default function Workout() {
                     originalIndex: index,
                     date: d
                 });
-                count++;
             }
             i++;
         }
         return result;
-    }, [activeRoutineObj, dayIndex]);
+    }, [activeRoutineObj, dayIndex, routineViewMode]);
     
     // Check if the current day has been completed today
     const isDayCompleted = !!(activeRoutine?.lastCompletedDate && 
@@ -305,6 +309,8 @@ export default function Workout() {
                                 onMarkComplete={markRoutineDayComplete}
                                 onJumpToDay={setActiveRoutineIndex}
                                 onWorkoutPress={setPreviewWorkout}
+                                viewMode={routineViewMode}
+                                onViewModeChange={setRoutineViewMode}
                             />
                         ) : (
                             <View className="mb-6">

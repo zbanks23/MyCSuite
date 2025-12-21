@@ -17,6 +17,8 @@ interface ActiveRoutineCardProps {
   onMarkComplete: () => void;
   onJumpToDay: (index: number) => void;
   onWorkoutPress: (workout: any) => void;
+  viewMode: 'next_3' | 'next_7' | 'week';
+  onViewModeChange: (mode: 'next_3' | 'next_7' | 'week') => void;
 }
 
 export function ActiveRoutineCard({
@@ -29,6 +31,8 @@ export function ActiveRoutineCard({
   onMarkComplete,
   onJumpToDay,
   onWorkoutPress,
+  viewMode,
+  onViewModeChange,
 }: ActiveRoutineCardProps) {
   const theme = useUITheme();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -71,6 +75,22 @@ export function ActiveRoutineCard({
           </View>
         ) : (
           <View className="py-2">
+            <View className="flex-row justify-end items-center mb-2 px-4">
+              <TouchableOpacity 
+                onPress={() => {
+                    Alert.alert("View Options", "Choose how many upcoming items to see", [
+                        { text: "Next 3 Workouts", onPress: () => onViewModeChange('next_3') },
+                        { text: "Next 7 Workouts", onPress: () => onViewModeChange('next_7') },
+                        { text: "Next Week", onPress: () => onViewModeChange('week') },
+                        { text: "Cancel", style: "cancel" }
+                    ]);
+                }}
+              >
+                <Text className="text-primary dark:text-primary_dark font-medium">
+                    {viewMode === 'next_3' ? 'Next 3' : viewMode === 'next_7' ? 'Next 7' : 'Next Week'}
+                </Text>
+              </TouchableOpacity>
+            </View>
             {daysToShow.map((item: any, index: number) => {
               const isToday = index === 0; 
               
