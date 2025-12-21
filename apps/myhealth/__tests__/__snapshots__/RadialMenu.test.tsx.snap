@@ -14,6 +14,37 @@ exports[`RadialMenu renders without crashing 1`] = `
   }
 >
   <View
+    style={
+      [
+        {},
+        {
+          "backgroundColor": "#000",
+          "height": 2668,
+          "pointerEvents": "none",
+          "position": "absolute",
+          "width": 1500,
+          "zIndex": 500,
+        },
+      ]
+    }
+  />
+  <View
+    style={
+      [
+        {},
+        {
+          "backgroundColor": "blue",
+          "borderRadius": 100,
+          "bottom": -70,
+          "height": 200,
+          "position": "absolute",
+          "width": 200,
+          "zIndex": 1000,
+        },
+      ]
+    }
+  />
+  <View
     className="absolute w-[52px] h-[52px] items-center justify-center"
     style={{}}
   >
@@ -39,7 +70,13 @@ exports[`RadialMenu renders without crashing 1`] = `
       style={
         [
           {
-            "color": "black",
+            "color": "#fff",
+            "textShadowColor": "rgba(0,0,0,0.5)",
+            "textShadowOffset": {
+              "height": 1,
+              "width": 0,
+            },
+            "textShadowRadius": 2,
           },
           {},
         ]
@@ -74,7 +111,13 @@ exports[`RadialMenu renders without crashing 1`] = `
       style={
         [
           {
-            "color": "black",
+            "color": "#fff",
+            "textShadowColor": "rgba(0,0,0,0.5)",
+            "textShadowOffset": {
+              "height": 1,
+              "width": 0,
+            },
+            "textShadowRadius": 2,
           },
           {},
         ]

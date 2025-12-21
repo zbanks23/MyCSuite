@@ -7,8 +7,9 @@ import { WorkoutManagerProvider, useWorkoutManager } from '../providers/WorkoutM
 // Define the mock functions outside so we can access them
 const mockUseAuth = jest.fn();
 
+const mockSelectOrder = jest.fn(() => Promise.resolve({ data: [] as any[], error: null }));
 const mockIs = jest.fn(() => ({
-    order: jest.fn(() => Promise.resolve({ data: [], error: null }))
+    order: mockSelectOrder
 }));
 
 // Mock dependencies
@@ -18,9 +19,9 @@ jest.mock('@mycsuite/auth', () => ({
             select: jest.fn(() => ({
                 eq: jest.fn(() => ({
                     is: mockIs,
-                    order: jest.fn(() => Promise.resolve({ data: [], error: null }))
+                    order: mockSelectOrder
                 })),
-                order: jest.fn(() => Promise.resolve({ data: [], error: null }))
+                order: mockSelectOrder
             })),
             insert: jest.fn(() => ({
                 select: jest.fn(() => ({
@@ -52,6 +53,19 @@ jest.mock('@mycsuite/auth', () => ({
     useAuth: () => mockUseAuth()
 }));
 
+// Mock useRoutineManager
+const mockSetRoutineState = jest.fn();
+jest.mock('../hooks/useRoutineManager', () => ({
+    useRoutineManager: jest.fn(() => ({
+        activeRoutine: null,
+        startActiveRoutine: jest.fn(),
+        setActiveRoutineIndex: jest.fn(),
+        markRoutineDayComplete: jest.fn(),
+        clearActiveRoutine: jest.fn(),
+        setRoutineState: mockSetRoutineState
+    }))
+}));
+
 // Mock Alert
 jest.spyOn(Alert, 'alert');
 
@@ -71,6 +85,7 @@ describe('WorkoutManagerProvider', () => {
         // Default to logged in user
         mockUseAuth.mockReturnValue({ user: { id: 'test-user-id' } });
         jest.clearAllMocks();
+        mockSelectOrder.mockResolvedValue({ data: [], error: null });
     });
 
     it('initializes and handles race conditions correctly', async () => {
@@ -87,23 +102,29 @@ describe('WorkoutManagerProvider', () => {
     });
 
     it('saves a workout to server when user is logged in', async () => {
+        // Mock returning one existing workout initially so we can wait for fetch to complete
+        mockSelectOrder
+            .mockResolvedValueOnce({ data: [{ workout_id: 'existing', workout_name: 'Existing', created_at: '2023-01-01' }], error: null }) // Workouts
+            .mockResolvedValueOnce({ data: [], error: null }) // Routines
+            .mockResolvedValueOnce({ data: [], error: null }); // History
+
         const { getByText, getByTestId } = render(
             <WorkoutManagerProvider>
                 <TestConsumer />
             </WorkoutManagerProvider>
         );
 
-        // Wait for initial fetch to avoid race condition
+        // Wait for initial fetch to complete (count 1)
         await waitFor(() => {
-            expect(getByTestId('saved-count').children[0]).toBe('0');
+            expect(getByTestId('saved-count').children[0]).toBe('1');
         });
 
         // Perform save
         fireEvent.press(getByText('Save'));
 
-        // Wait for update
+        // Wait for update - should be 2 now (1 existing + 1 new)
         await waitFor(() => {
-             expect(getByTestId('saved-count').children[0]).toBe('1');
+             expect(getByTestId('saved-count').children[0]).toBe('2');
         });
     });
 

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Exercise } from "./useWorkoutManager";
 
 interface UseActiveWorkoutPersistenceProps {
@@ -28,8 +28,15 @@ export function useActiveWorkoutPersistence({
     setRunning,
     setHasActiveSession,
 }: UseActiveWorkoutPersistenceProps) {
+    const isMounted = useRef(false);
+
     // Persist to local storage
     useEffect(() => {
+        if (!isMounted.current) {
+            isMounted.current = true;
+            return;
+        }
+
         try {
             if (typeof window !== "undefined" && window.localStorage) {
                 window.localStorage.setItem(
@@ -49,9 +56,11 @@ export function useActiveWorkoutPersistence({
                         "myhealth_workout_routine_id",
                         routineId,
                     );
-                } else {window.localStorage.removeItem(
+                } else {
+                    window.localStorage.removeItem(
                         "myhealth_workout_routine_id",
-                    );}
+                    );
+                }
                 window.localStorage.setItem(
                     "myhealth_workout_running",
                     JSON.stringify(isRunning),
