@@ -140,19 +140,39 @@ export async function persistCompletedWorkoutToSupabase(
     // 2. Create Set Logs
     const setLogInserts: any[] = [];
 
+    // Identify potential UUIDs to verify
+    const candidateIds = new Set<string>();
+    exercises.forEach((ex) => {
+        if (isUUID(ex.id)) candidateIds.add(ex.id);
+    });
+
+    // Verification step: Check which IDs actually exist in the DB
+    let validIds = new Set<string>();
+    if (candidateIds.size > 0) {
+        const { data: existingExercises } = await supabase
+            .from("exercises")
+            .select("exercise_id")
+            .in("exercise_id", Array.from(candidateIds));
+
+        if (existingExercises) {
+            existingExercises.forEach((e: any) => validIds.add(e.exercise_id));
+        }
+    }
+
     exercises.forEach((ex) => {
         if (ex.logs && ex.logs.length > 0) {
             ex.logs.forEach((log, index) => {
+                const isValidId = validIds.has(ex.id);
                 setLogInserts.push({
                     workout_log_id: workoutLog.workout_log_id,
-                    exercise_set_id: null, // We don't have this link in ad-hoc mode
+                    exercise_set_id: null,
                     details: {
                         ...log,
                         exercise_name: ex.name,
                         exercise_id: ex.id,
                         set_number: index + 1,
                     },
-                    exercise_id: isUUID(ex.id) ? ex.id : null, // New column
+                    exercise_id: isValidId ? ex.id : null,
                     created_at: new Date().toISOString(),
                 });
             });
@@ -166,8 +186,7 @@ export async function persistCompletedWorkoutToSupabase(
 
         if (setLogsError) {
             console.warn("Failed to insert set logs", setLogsError);
-            // We return the workout log as success, but warn?
-            // Or treating it as success is arguably fine since the summary is there.
+            // Non-fatal, workout log is saved
         }
     }
 
