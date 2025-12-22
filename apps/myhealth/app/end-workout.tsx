@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedView } from '../components/ui/ThemedView';
 import { ScreenHeader } from '../components/ui/ScreenHeader';
 import { useActiveWorkout } from '../providers/ActiveWorkoutProvider';
+import { useWorkoutManager } from '../hooks/useWorkoutManager';
 
 export default function EndWorkoutScreen() {
     const router = useRouter();
@@ -12,15 +13,78 @@ export default function EndWorkoutScreen() {
         workoutSeconds, 
         exercises, 
         finishWorkout, 
-        cancelWorkout 
+        cancelWorkout,
+        sourceWorkoutId 
     } = useActiveWorkout();
+    
+    const { savedWorkouts, updateSavedWorkout } = useWorkoutManager();
 
     const completedSetsCount = exercises.reduce((acc, ex) => acc + (ex.completedSets || 0), 0);
     const totalExercises = exercises.length;
 
     const [notes, setNotes] = React.useState("");
 
+    const areWorkoutsDifferent = (current: typeof exercises, original: typeof exercises) => {
+        if (current.length !== original.length) return true;
+        for (let i = 0; i < current.length; i++) {
+            if (current[i].name !== original[i].name) return true;
+            if (current[i].sets !== original[i].sets) return true;
+            if (current[i].reps !== original[i].reps) return true;
+            // Simplified check for properties
+            const p1 = current[i].properties || [];
+            const p2 = original[i].properties || [];
+            if (p1.length !== p2.length) return true;
+            if (p1.some((p, k) => p !== p2[k])) return true;
+        }
+        return false;
+    };
+
     const handleSave = () => {
+        if (sourceWorkoutId) {
+            const original = savedWorkouts.find(w => w.id === sourceWorkoutId);
+            if (original && areWorkoutsDifferent(exercises, original.exercises)) {
+                Alert.alert(
+                    "Update Template?",
+                    "You've made changes to this workout. Do you want to update the saved template?",
+                    [
+                        {
+                            text: "No, History Only",
+                            onPress: () => {
+                                finishWorkout(notes);
+                                router.dismiss();
+                            }
+                        },
+                        {
+                            text: "Yes, Update Template",
+                            onPress: () => {
+                                // Update template first
+                                const updatedExercises = exercises.map(ex => ({
+                                    ...ex,
+                                    completedSets: 0,
+                                    logs: []
+                                }));
+                                updateSavedWorkout(
+                                    sourceWorkoutId, 
+                                    original.name, 
+                                    updatedExercises, 
+                                    () => {
+                                        // Then finish
+                                        finishWorkout(notes);
+                                        router.dismiss();
+                                    }
+                                );
+                            }
+                        },
+                        {
+                            text: "Cancel",
+                            style: "cancel"
+                        }
+                    ]
+                );
+                return;
+            }
+        }
+
         finishWorkout(notes);
         router.dismiss();
     };

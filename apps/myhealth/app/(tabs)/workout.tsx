@@ -131,13 +131,13 @@ export default function Workout() {
                         style: "destructive",
                         onPress: () => {
                             cancelWorkout();
-                            setTimeout(() => startWorkout(workout.exercises, workout.name), 100);
+                            setTimeout(() => startWorkout(workout.exercises, workout.name, undefined, workout.id), 100);
                         }
                     }
                 ]
             );
         } else {
-            startWorkout(workout.exercises, workout.name);
+            startWorkout(workout.exercises, workout.name, undefined, workout.id);
         }
     }
 

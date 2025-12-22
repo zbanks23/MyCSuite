@@ -7,10 +7,12 @@ interface UseActiveWorkoutPersistenceProps {
     workoutName: string;
     isRunning: boolean;
     routineId: string | null;
+    sourceWorkoutId: string | null;
     setExercises: (exercises: Exercise[]) => void;
     setWorkoutSeconds: (seconds: number) => void;
     setWorkoutName: (name: string) => void;
     setRoutineId: (id: string | null) => void;
+    setSourceWorkoutId: (id: string | null) => void;
     setRunning: (running: boolean) => void;
     setHasActiveSession: (hasSession: boolean) => void;
 }
@@ -21,10 +23,12 @@ export function useActiveWorkoutPersistence({
     workoutName,
     isRunning,
     routineId,
+    sourceWorkoutId,
     setExercises,
     setWorkoutSeconds,
     setWorkoutName,
     setRoutineId,
+    setSourceWorkoutId,
     setRunning,
     setHasActiveSession,
 }: UseActiveWorkoutPersistenceProps) {
@@ -61,6 +65,16 @@ export function useActiveWorkoutPersistence({
                         "myhealth_workout_routine_id",
                     );
                 }
+                if (sourceWorkoutId) {
+                    window.localStorage.setItem(
+                        "myhealth_workout_source_id",
+                        sourceWorkoutId,
+                    );
+                } else {
+                    window.localStorage.removeItem(
+                        "myhealth_workout_source_id",
+                    );
+                }
                 window.localStorage.setItem(
                     "myhealth_workout_running",
                     JSON.stringify(isRunning),
@@ -69,7 +83,14 @@ export function useActiveWorkoutPersistence({
         } catch {
             // ignore
         }
-    }, [exercises, workoutSeconds, workoutName, isRunning, routineId]);
+    }, [
+        exercises,
+        workoutSeconds,
+        workoutName,
+        isRunning,
+        routineId,
+        sourceWorkoutId,
+    ]);
 
     // Load from local storage
     useEffect(() => {
@@ -90,6 +111,11 @@ export function useActiveWorkoutPersistence({
                 );
                 if (rId) setRoutineId(rId);
 
+                const sId = window.localStorage.getItem(
+                    "myhealth_workout_source_id",
+                );
+                if (sId) setSourceWorkoutId(sId);
+
                 const running = window.localStorage.getItem(
                     "myhealth_workout_running",
                 );
@@ -105,6 +131,7 @@ export function useActiveWorkoutPersistence({
         setWorkoutSeconds,
         setWorkoutName,
         setRoutineId,
+        setSourceWorkoutId,
         setRunning,
         setHasActiveSession,
     ]);

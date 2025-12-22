@@ -14,7 +14,7 @@ interface ActiveWorkoutContextType {
     currentIndex: number;
     workoutName: string;
     setWorkoutName: (name: string) => void;
-    startWorkout: (exercisesToStart?: Exercise[], name?: string, routineId?: string) => void;
+    startWorkout: (exercisesToStart?: Exercise[], name?: string, routineId?: string, sourceWorkoutId?: string) => void;
     pauseWorkout: () => void;
     resetWorkout: () => void;
     completeSet: (index: number, input?: { weight?: number; reps?: number; duration?: number; distance?: number }) => void;
@@ -29,6 +29,7 @@ interface ActiveWorkoutContextType {
     cancelWorkout: () => void;
     hasActiveSession: boolean;
     routineId: string | null;
+    sourceWorkoutId: string | null;
 }
 
 const ActiveWorkoutContext = createContext<ActiveWorkoutContextType | undefined>(undefined);
@@ -42,6 +43,7 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
 	]);
     const [workoutName, setWorkoutName] = useState("Current Workout");
     const [routineId, setRoutineId] = useState<string | null>(null);
+    const [sourceWorkoutId, setSourceWorkoutId] = useState<string | null>(null);
     const [hasActiveSession, setHasActiveSession] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -63,16 +65,18 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
         workoutName,
         isRunning,
         routineId,
+        sourceWorkoutId,
         setExercises,
         setWorkoutSeconds,
         setWorkoutName,
         setRoutineId,
+        setSourceWorkoutId,
         setRunning,
         setHasActiveSession,
     });
 
     // Actions
-    const startWorkout = useCallback((exercisesToStart?: Exercise[], name?: string, routineId?: string) => {
+    const startWorkout = useCallback((exercisesToStart?: Exercise[], name?: string, routineId?: string, sourceWorkoutId?: string) => {
 		// Allow empty workouts
 		// if (targetExercises.length === 0) { ... }
         if (exercisesToStart) {
@@ -84,6 +88,7 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
              setWorkoutName("Current Workout");
         }
         setRoutineId(routineId || null);
+        setSourceWorkoutId(sourceWorkoutId || null);
 		setRunning(true);
         setHasActiveSession(true);
         setIsExpanded(true);
@@ -228,6 +233,7 @@ export function ActiveWorkoutProvider({ children }: { children: React.ReactNode 
         setExpanded: setIsExpanded,
         setWorkoutName,
         routineId,
+        sourceWorkoutId,
     };
 
     return (

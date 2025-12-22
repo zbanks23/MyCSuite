@@ -409,7 +409,7 @@ export async function persistCompletedWorkoutToSupabase(
                         exercise_id: ex.id,
                         set_number: index + 1,
                     },
-                    exercise_id: ex.id, // New column
+                    exercise_id: isUUID(ex.id) ? ex.id : null, // New column
                     created_at: new Date().toISOString(),
                 });
             });
@@ -429,6 +429,12 @@ export async function persistCompletedWorkoutToSupabase(
     }
 
     return { data: workoutLog, error: null };
+}
+
+function isUUID(str: string) {
+    const regex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return regex.test(str);
 }
 
 export async function persistWorkoutToSupabase(
