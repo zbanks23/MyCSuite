@@ -38,9 +38,12 @@ export function QuickUtilityButton() {
   const { isRunning, startWorkout, pauseWorkout, resetWorkout, isExpanded, setExpanded } = useActiveWorkout();
 
 
+  // Ensure Back button is always last to be at -90 degrees (Left)
   const currentActions = useMemo(() => {
+     let actions: ActionItemType[] = [];
+
      if (isExpanded || pathname.includes('active-workout')) {
-         return [
+         actions = [
             { id: 'end_workout', icon: 'flag.checkered', label: 'End', action: 'end_workout' },
             { id: 'reset_workout', icon: 'arrow.counterclockwise', label: 'Reset', action: 'reset_workout' },
             { 
@@ -50,20 +53,47 @@ export function QuickUtilityButton() {
                 action: 'toggle_workout' 
             },
          ];
-     }
-     if (pathname.includes('workout') || pathname === '/') {
-
-         return [
+     } else if (pathname.includes('workout') || pathname === '/') {
+         actions = [
             { id: 'routines', icon: 'list.bullet.clipboard', label: 'Routines', route: '/routines' },
             { id: 'saved_workouts', icon: 'folder', label: 'Workouts', route: '/workouts/saved' },
             { id: 'exercises', icon: 'dumbbell.fill', label: 'Exercises', route: '/exercises' },
          ];
+     } else if (pathname.includes('profile')) {
+        actions = CONTEXT_ACTIONS['profile'];
+     } else {
+        actions = CONTEXT_ACTIONS['home'] || [];
      }
-     if (pathname.includes('profile')) return CONTEXT_ACTIONS['profile'];
-     return CONTEXT_ACTIONS['home'] || [];
+
+     // Always append Back button
+     return [
+       ...actions,
+       { id: 'back', icon: 'chevron.left', label: 'Back', action: 'go_back' }
+     ];
   }, [pathname, isRunning, isExpanded]);
 
   const handleAction = React.useCallback((item: ActionItemType) => {
+      if (item.action === 'go_back') {
+          // Special handling for End Workout screen
+          if (pathname === '/workouts/end') {
+              startWorkout(); // Resumes and maximizes
+              router.back();
+              return;
+          }
+          
+          if (isExpanded) {
+              setExpanded(false);
+              return;
+          }
+
+          if (router.canGoBack()) {
+              router.back();
+          } else {
+              router.replace('/');
+          }
+          return;
+      }
+
       if (item.action === 'toggle_workout') {
           if (isRunning) {
               pauseWorkout();
@@ -91,8 +121,7 @@ export function QuickUtilityButton() {
       } else {
           console.log('Trigger action:', item.action);
       }
-  }, [router, isRunning, startWorkout, pauseWorkout, resetWorkout, setExpanded]);
-
+  }, [router, isRunning, startWorkout, pauseWorkout, resetWorkout, setExpanded, pathname, isExpanded]);
 
   const menuItems: RadialMenuItem[] = useMemo(() => {
     return currentActions.map(action => ({
@@ -122,7 +151,10 @@ export function QuickUtilityButton() {
       }
   };
 
-  if (!currentActions || currentActions.length === 0) return null;
+  // We always have at least the Back button now, so no need for empty check returning null
+  // unless we actually want to hide it completely if there are no other actions?
+  // User request: "Place it always at the left horizontal line".
+  // So we should probably let it render.
 
   return (
     <Animated.View 

@@ -16,7 +16,6 @@ import { WorkoutStickyHeader } from '../components/workouts/WorkoutStickyHeader'
 import { ActiveWorkoutOverlay } from '../components/workouts/ActiveWorkoutOverlay'; 
 import { QuickNavigationButton } from '../components/ui/QuickNavigationMenu';
 import { QuickUtilityButton } from '../components/ui/QuickUtilityMenu';
-import { QuickBackButton } from '../components/ui/QuickBackButton';
 import { FloatingButtonProvider } from '../providers/FloatingButtonContext';
 import { GlobalOverlay } from '../components/ui/GlobalOverlay';
 
@@ -93,7 +92,6 @@ export default function RootLayout() {
                     <GlobalOverlay>
                       <QuickNavigationButton />
                       <QuickUtilityButton />
-                      <QuickBackButton />
                     </GlobalOverlay>
                   </FloatingButtonProvider>
                   <StatusBar style="auto" />
