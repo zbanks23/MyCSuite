@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Dimensions, Text } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
 
-type DateRange = 'Day' | 'Week' | 'Month' | 'Year';
+type DateRange = 'Week' | 'Month' | '6Month' | 'Year';
 
 interface BodyWeightChartProps {
   data: { value: number; label: string; date: string; spineIndex?: number }[];
@@ -61,10 +61,10 @@ export function BodyWeightChart({ data, color = '#3b82f6', textColor = '#9ca3af'
   if (maxPoints && selectedRange) {
     const now = new Date();
     const config = {
-      Day: { count: 17, unit: 'date' as const },
-      Week: { count: 13, unit: 'week' as const },
-      Month: { count: 33, unit: 'date' as const }, // Monthly view is now daily points for ~32 days
-      Year: { count: 13, unit: 'month' as const },
+      Week: { count: 7, unit: 'date' as const },
+      Month: { count: 31, unit: 'date' as const },
+      '6Month': { count: 26, unit: 'week' as const },
+      Year: { count: 12, unit: 'month' as const },
     };
     
     const { count, unit } = config[selectedRange as keyof typeof config];

@@ -5,12 +5,12 @@ import { BodyWeightChart } from './BodyWeightChart';
 import { SegmentedControl, SegmentedControlOption } from '../ui/SegmentedControl';
 
 // Defined locally to avoid circular dependencies if any
-type DateRange = 'Day' | 'Week' | 'Month' | 'Year';
+type DateRange = 'Week' | 'Month' | '6Month' | 'Year';
 
 const RANGE_OPTIONS: SegmentedControlOption<DateRange>[] = [
-  { label: 'Day', value: 'Day' },
   { label: 'Week', value: 'Week' },
   { label: 'Month', value: 'Month' },
+  { label: '6M', value: '6Month' },
   { label: 'Year', value: 'Year' },
 ];
 
@@ -47,20 +47,16 @@ export function BodyWeightCard({
     const d = new Date(selectedPoint.date);
     const date = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
     
-    if (selectedRange === 'Day') {
+    if (selectedRange === 'Week' || selectedRange === 'Month') {
       return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
     }
     
-    if (selectedRange === 'Week') {
+    if (selectedRange === '6Month') {
       const end = new Date(date);
       end.setDate(date.getDate() + 6);
       return `${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`;
     }
     
-    if (selectedRange === 'Month') {
-      return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-
     if (selectedRange === 'Year') {
       return date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
     }
@@ -109,7 +105,12 @@ export function BodyWeightCard({
                     data={history} 
                     color={primaryColor}
                     textColor={textColor}
-                    maxPoints={selectedRange === 'Day' ? 17 : selectedRange === 'Week' ? 13 : selectedRange === 'Month' ? 33 : 13} // Year is also 13 (months)
+                    maxPoints={
+                        selectedRange === 'Week' ? 7 : 
+                        selectedRange === 'Month' ? 31 : 
+                        selectedRange === '6Month' ? 26 : 
+                        12
+                    }
                     selectedRange={selectedRange}
                     onPointSelect={(point) => setSelectedPoint(point)}
                 />
