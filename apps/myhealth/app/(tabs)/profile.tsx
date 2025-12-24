@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { useAuth, supabase } from '@mycsuite/auth';
-import { SharedButton, useUITheme, ThemedText, ThemedView } from '@mycsuite/ui';
+import { SharedButton, useUITheme, ThemedView } from '@mycsuite/ui';
 import { useRouter } from 'expo-router';
 import { IconSymbol } from '../../components/ui/icon-symbol';
 import { BodyWeightCard } from '../../components/profile/BodyWeightCard';
@@ -14,7 +14,6 @@ export default function ProfileScreen() {
   const { user } = useAuth();
   const router = useRouter();
   const [username, setUsername] = useState('');
-  const [fullName, setFullName] = useState('');
   const [latestWeight, setLatestWeight] = useState<number | null>(null);
   const [weightHistory, setWeightHistory] = useState<{ value: number; label: string; date: string }[]>([]);
   const [isWeightModalVisible, setIsWeightModalVisible] = useState(false);
@@ -32,7 +31,6 @@ export default function ProfileScreen() {
           if (error) console.log('Error fetching profile:', error);
           if (data) {
             setUsername(data.username);
-            setFullName(data.full_name);
           }
         });
     }
@@ -268,7 +266,7 @@ export default function ProfileScreen() {
   return (
     <ThemedView className="flex-1 p-4">
       <ScreenHeader 
-        title="Profile" 
+        title={username || 'Profile'} 
         rightAction={
             <TouchableOpacity onPress={() => router.push('/settings')}>
               <IconSymbol name="gearshape.fill" size={24} color={theme.text} />
@@ -276,16 +274,6 @@ export default function ProfileScreen() {
         } 
       />
       
-      <View className="mb-6">
-        <View className="mb-4">
-            <Text className="text-sm mb-1 text-gray-500">Username</Text>
-            <ThemedText className="text-lg font-medium">{username || 'Not set'}</ThemedText>
-        </View>
-        <View className="mb-4">
-            <Text className="text-sm mb-1 text-gray-500">Full Name</Text>
-            <ThemedText className="text-lg font-medium">{fullName || 'Not set'}</ThemedText>
-        </View>
-      </View>
 
       <BodyWeightCard 
         weight={latestWeight} 
