@@ -20,10 +20,10 @@ export const lightTheme: AppTheme = {
   primary: 'hsl(8, 100%, 67%)',
   accent: 'hsl(117, 20%, 61%)',
   background: 'hsl(0, 0%, 100%)',
-  backgroundMuted: 'hsl(0, 0%, 95%)',
-  backgroundDimmed: 'hsl(0, 0%, 90%)',
+  backgroundMuted: 'hsl(359, 75%, 89%)', // surface
+  backgroundDimmed: 'hsl(359, 75%, 89%)',
   text: 'hsl(0, 0%, 5%)',
-  textMuted: 'hsl(0, 0%, 30%)',
+  textMuted: 'hsl(0, 0%, 5%)', // Using same for now
   surface: 'hsl(359, 75%, 89%)',
   icon: 'hsl(0, 0%, 5%)',
   tabIconDefault: 'hsl(359, 75%, 89%)',
@@ -32,18 +32,18 @@ export const lightTheme: AppTheme = {
 };
 
 export const darkTheme: AppTheme = {
-  primary: 'hsl(8, 100%, 67%)',
-  accent: 'hsl(117, 20%, 61%)',
-  background: 'hsl(0, 0%, 5%)',
-  backgroundMuted: 'hsl(0, 0%, 30%)',
-  backgroundDimmed: 'hsl(0, 0%, 25%)',
-  text: 'hsl(0, 0%, 100%)',
-  textMuted: 'hsl(0, 0%, 70%)',
-  surface: 'hsl(359, 75%, 89%)',
-  icon: 'hsl(0, 0%, 100%)',
-  tabIconDefault: 'hsl(359, 75%, 89%)',
-  tabIconSelected: 'hsl(8, 100%, 67%)',
-  error: 'hsl(0, 84%, 60%)',
+  primary: 'hsl(5, 100%, 75%)', // primary-dark
+  accent: 'hsl(122, 37%, 74%)', // accent-dark
+  background: 'hsl(0, 18%, 15%)', // background-dark
+  backgroundMuted: 'hsl(0, 17%, 21%)', // surface-dark
+  backgroundDimmed: 'hsl(0, 17%, 21%)',
+  text: 'hsl(0, 100%, 98%)', // apptext-dark
+  textMuted: 'hsl(0, 17%, 21%)', // surface-dark (maybe lighter?)
+  surface: 'hsl(0, 17%, 21%)', // surface-dark
+  icon: 'hsl(0, 100%, 98%)',
+  tabIconDefault: 'hsl(0, 17%, 21%)',
+  tabIconSelected: 'hsl(5, 100%, 75%)',
+  error: 'hsl(0, 84%, 60%)', // sticking to same red for now or lighter?
 };
 
 // For backward compatibility if needed, or default export

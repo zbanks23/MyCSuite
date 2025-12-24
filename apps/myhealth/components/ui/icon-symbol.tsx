@@ -2,6 +2,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { SymbolViewProps } from 'expo-symbols';
 import { ComponentProps } from 'react';
 import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
+import { hslToHex } from '../../utils/colors';
 
 type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
 type IconSymbolName = keyof typeof MAPPING;
@@ -34,11 +35,14 @@ const MAPPING = {
   'xmark.circle.fill': 'cancel',
 } as IconMapping;
 
+
+
 /**
  * An icon component that uses native SF Symbols on iOS, and Material Icons on Android and web.
  * This ensures a consistent look across platforms, and optimal resource usage.
  * Icon `name`s are based on SF Symbols and require manual mapping to Material Icons.
  */
+
 export function IconSymbol({
   name,
   size = 24,
@@ -50,5 +54,7 @@ export function IconSymbol({
   color: string | OpaqueColorValue;
   style?: StyleProp<TextStyle>;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+  const safeColor = (typeof color === 'string' && color.startsWith('hsl')) ? hslToHex(color) : color;
+  return <MaterialIcons color={safeColor} size={size} name={MAPPING[name]} style={style} />;
 }
+
