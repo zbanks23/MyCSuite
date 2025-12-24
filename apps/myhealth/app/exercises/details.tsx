@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
-import { View, ScrollView, Pressable, useColorScheme } from 'react-native';
+import { View, ScrollView, Pressable } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ThemedText } from '@mycsuite/ui';
-import { useUITheme } from '@mycsuite/ui';
+import { ThemedText, useUITheme } from '@mycsuite/ui';
 import { useAuth } from '@mycsuite/auth';
 import { IconSymbol } from '../../components/ui/icon-symbol';
 import { useExerciseStats } from '../../hooks/workouts/useExerciseStats';
@@ -14,8 +13,6 @@ export default function ExerciseDetailsScreen() {
     const params = useLocalSearchParams();
     const theme = useUITheme();
     const { user } = useAuth();
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
     
     const exercise = useMemo(() => {
         try {
@@ -48,30 +45,21 @@ export default function ExerciseDetailsScreen() {
     }
 
     // Colors from tailwind.config.js
-    const colors = {
-        light: {
-            primary: '#FF6F61',
-            background: '#FFF5F5',
-            surface: '#EAD4D4',
-            text: '#2D1F1F',
-            border: '#EAD4D4'
-        },
-        dark: {
-            primary: '#FF8A80',
-            background: '#2D1F1F',
-            surface: '#3E2C2C',
-            text: '#FFF5F5',
-            border: '#3E2C2C'
-        }
+    // Colors from theme context
+    // Colors from theme context
+    const currentColors = {
+        primary: theme.primary || '#FF6F61',
+        background: theme.bgLight || '#FFF5F5',
+        surface: theme.bgDark || '#EAD4D4',
+        text: theme.text || '#2D1F1F',
+        border: theme.bgDark || '#EAD4D4'
     };
-
-    const currentColors = isDark ? colors.dark : colors.light;
     
     // Derived UI colors
     const cardBackground = currentColors.surface;
-    const toggleBackground = isDark ? '#261b1b' : '#dbcaca'; // Slightly darker/lighter than surface for contrast
-    const activeToggleBg = currentColors.background; 
-    const activeToggleText = currentColors.text;
+    const toggleBackground = theme.bg || theme.bgDark || '#EAD4D4'; 
+    const activeToggleBg = theme.bgLight || '#FFF5F5'; 
+    const activeToggleText = theme.text || '#2D1F1F';
 
     return (
         <View style={{ flex: 1, backgroundColor: currentColors.background }}>
@@ -95,9 +83,9 @@ export default function ExerciseDetailsScreen() {
 
             <ScrollView style={{ flex: 1, padding: 16 }}>
                 <View style={{ marginBottom: 24 }}>
-                    <ThemedText type="title" style={{ marginBottom: 4, color: currentColors.text }}>{exercise.name || 'Unknown Name'}</ThemedText>
+                    <ThemedText type="title" style={{ marginBottom: 4, color: currentColors.text }}>{exercise.name || 'Exercise'}</ThemedText>
                     <ThemedText style={{ fontSize: 18, color: currentColors.text, opacity: 0.7 }}>
-                        {exercise.category || 'Uncategorized'}
+                        {exercise.category || 'Category'}
                     </ThemedText>
                 </View>
 

@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useUITheme as useTheme } from '@mycsuite/ui';
+import { useUITheme as useTheme, ThemedView, ThemedText } from '@mycsuite/ui';
 import { useWorkoutManager } from '../../hooks/workouts/useWorkoutManager';
 import { useFloatingButton } from '../../providers/FloatingButtonContext';
-import { ThemedView } from '@mycsuite/ui';
-import { ThemedText } from '@mycsuite/ui';
 import { useRoutineDraft } from '../../hooks/routines/useRoutineDraft';
 import { RoutineDraftItem } from '../../components/routines/RoutineDraftItem';
 import { AddDayModal } from '../../components/routines/AddDayModal';
@@ -50,7 +48,7 @@ export default function CreateRoutineScreen() {
     // Initialize
     useEffect(() => {
         if (editingRoutineId) {
-            const routine = routines.find(r => r.id === editingRoutineId);
+            const routine = routines.find((r: any) => r.id === editingRoutineId);
             if (routine) {
                 setRoutineDraftName(routine.name);
                 setRoutineSequence(routine.sequence ? JSON.parse(JSON.stringify(routine.sequence)) : []);
@@ -109,7 +107,7 @@ export default function CreateRoutineScreen() {
 
     return (
         <ThemedView className="flex-1">
-             <View className="flex-row justify-between items-center p-4 border-b border-surface dark:border-white/10 pt-4 android:pt-10">
+             <View className="flex-row justify-between items-center p-4 border-b border-bg-dark dark:border-white/10 pt-4 android:pt-10">
                 <TouchableOpacity onPress={() => router.back()} className="p-2">
                      <ThemedText type="link">Cancel</ThemedText>
                 </TouchableOpacity>
@@ -125,7 +123,7 @@ export default function CreateRoutineScreen() {
                         placeholder="Routine Name" 
                         value={routineDraftName} 
                         onChangeText={setRoutineDraftName} 
-                        className="bg-surface dark:bg-surface_dark text-apptext dark:text-apptext_dark p-4 rounded-xl text-base border border-transparent dark:border-white/10 mb-6"
+                        className="bg-bg-default dark:bg-bg-default-dark text-apptext dark:text-apptext_dark p-4 rounded-xl text-base border border-transparent dark:border-white/10 mb-6"
                         placeholderTextColor={theme.icon}
                     />
                     

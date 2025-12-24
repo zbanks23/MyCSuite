@@ -41,7 +41,7 @@ export function ActiveRoutineTimelineItem({
     ? '#4CAF50' // Success Green
     : isToday
     ? theme.primary
-    : theme.surface;
+    : theme.bgDark;
 
   return (
     <TouchableOpacity
@@ -73,14 +73,14 @@ export function ActiveRoutineTimelineItem({
 
         {!isLastInView && (
           <View
-            className="w-[2px] flex-1 bg-surface dark:bg-surface_dark -my-0.5 z-[1]"
+            className="w-[2px] flex-1 bg-bg-dark dark:bg-bg-dark-dark -my-0.5 z-[1]"
           />
         )}
 
         {isLastInView && !isCollapsed &&
           globalDayNum === activeRoutineLength && (
             <View
-              style={{ backgroundColor: theme.surface }}
+              style={{ backgroundColor: theme.bgDark }}
               className="w-2 h-2 rounded-full -mt-1 z-[2]"
             />
           )}
@@ -104,7 +104,7 @@ export function ActiveRoutineTimelineItem({
                 fontSize: isToday ? 18 : 16,
                 textDecorationLine: isCompletedToday ? 'line-through' : 'none',
               }}
-              className={`${isCompletedToday ? 'text-gray-500' : isToday ? 'text-apptext dark:text-apptext_dark' : 'text-gray-500'}`}
+              className={`${isCompletedToday ? 'text-apptext-muted dark:text-apptext-muted-dark' : isToday ? 'text-apptext dark:text-apptext-dark' : 'text-apptext-muted dark:text-apptext-muted-dark'}`}
             >
               {item.type === 'rest'
                 ? 'Rest Day'
@@ -136,8 +136,8 @@ export function ActiveRoutineTimelineItem({
                 </Text>
               )}
               {isToday && !isCompletedToday && (
-                <View className="bg-surface dark:bg-surface_dark px-2 py-0.5 rounded">
-                  <Text className="text-[10px] text-gray-500 font-bold">
+                <View className="bg-bg-dark dark:bg-bg-dark-dark px-2 py-0.5 rounded">
+                  <Text className="text-[10px] text-apptext-muted dark:text-apptext-muted-dark font-bold">
                     TODAY
                   </Text>
                 </View>
@@ -156,7 +156,7 @@ export function ActiveRoutineTimelineItem({
         {isToday && !isCompletedToday && (
           <View className="flex-row gap-3 mt-2">
             <TouchableOpacity
-              className="p-2.5 rounded-lg bg-primary dark:bg-primary_dark flex-1 items-center justify-center"
+              className="p-2.5 rounded-lg bg-primary dark:bg-primary-dark flex-1 items-center justify-center"
               onPress={() => {
                 if (item?.type === 'workout' && item.workout) {
                   console.log("ActiveRoutineCard: item.workout ID:", item.workout.id);
@@ -174,10 +174,10 @@ export function ActiveRoutineTimelineItem({
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="p-2.5 rounded-lg border border-transparent dark:border-white/10 bg-background dark:bg-background_dark px-4 items-center justify-center"
+              className="p-2.5 rounded-lg border border-bg-dark dark:border-white/10 bg-bg-light dark:bg-bg-light-dark px-4 items-center justify-center"
               onPress={() => onMarkComplete()}
             >
-              <Text className="text-apptext dark:text-apptext_dark">Skip</Text>
+              <Text className="text-apptext dark:text-apptext-dark">Skip</Text>
             </TouchableOpacity>
           </View>
         )}

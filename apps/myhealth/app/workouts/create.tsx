@@ -119,7 +119,7 @@ export default function CreateWorkoutScreen() {
 
     return (
         <ThemedView className="flex-1">
-             <View className="flex-row justify-between items-center p-4 border-b border-surface dark:border-white/10 pt-4 android:pt-10">
+             <View className="flex-row justify-between items-center p-4 border-b border-bg-dark dark:border-white/10 pt-4 android:pt-10">
                 <TouchableOpacity onPress={() => router.back()} className="p-2">
                      <ThemedText type="link">Cancel</ThemedText>
                 </TouchableOpacity>
@@ -134,7 +134,7 @@ export default function CreateWorkoutScreen() {
                     placeholder="Workout Name" 
                     value={workoutDraftName} 
                     onChangeText={setWorkoutDraftName} 
-                    className="bg-surface dark:bg-surface_dark text-apptext dark:text-apptext_dark p-4 rounded-xl text-base border border-transparent dark:border-white/10 mb-6"
+                    className="bg-bg-default dark:bg-bg-default-dark text-apptext dark:text-apptext-dark p-4 rounded-xl text-base border border-transparent dark:border-white/10 mb-6"
                     placeholderTextColor={theme.icon}
                 />
                 

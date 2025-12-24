@@ -65,17 +65,18 @@ export function BodyWeightCard({
   };
 
   return (
-    <View className="p-4 rounded-xl mb-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+    <View className="p-4 rounded-xl mb-4 bg-bg-light dark:bg-bg-light-dark border border-bg-dark dark:border-bg-dark-dark">
       <View className="flex-row justify-between items-center mb-2">
         <View className="flex-row items-center">
-            <View className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 items-center justify-center mr-3">
-                 <IconSymbol name="scalemass.fill" size={18} color="#3b82f6" />
+            <View className="w-8 h-8 rounded-full bg-primary/10 items-center justify-center mr-3">
+                 <IconSymbol name="scalemass.fill" size={18} color={primaryColor || '#3b82f6'} />
             </View>
-            <Text className="font-semibold text-base text-gray-900 dark:text-white">Body Weight</Text>
+            <Text className="font-semibold text-base text-apptext dark:text-apptext-dark">Body Weight</Text>
         </View>
         <Pressable 
             onPress={onLogWeight}
-            className="bg-blue-500 rounded-full p-1.5"
+            style={{ backgroundColor: primaryColor }}
+            className="rounded-full p-1.5"
         >
           <IconSymbol name="plus" size={16} color="white" />
         </Pressable>
@@ -87,10 +88,10 @@ export function BodyWeightCard({
                 <View className="flex-row justify-between items-end mb-4">
                     <View>
                         <View className="flex-row items-baseline">
-                            <Text className="text-3xl font-bold mr-1 text-gray-900 dark:text-white">{displayWeight}</Text>
-                            <Text className="text-gray-500 text-sm">lbs</Text>
+                            <Text className="text-3xl font-bold mr-1 text-apptext dark:text-apptext-dark">{displayWeight}</Text>
+                            <Text className="text-apptext-muted dark:text-apptext-muted-dark text-sm">lbs</Text>
                         </View>
-                        <Text className="text-[11px] font-medium text-gray-500 dark:text-gray-400 mt-0.5">
+                        <Text className="text-[11px] font-medium text-apptext-muted dark:text-apptext-muted-dark mt-0.5">
                             {getSelectionLabel()}
                         </Text>
                     </View>

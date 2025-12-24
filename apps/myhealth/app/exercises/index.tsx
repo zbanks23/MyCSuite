@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, TouchableOpacity, View, ActivityIndicator, TextInput, Alert } from 'react-native'; 
 import { useRouter } from 'expo-router';
 
-import { ThemedText } from '@mycsuite/ui';
-import { ThemedView } from '@mycsuite/ui';
-import { useUITheme } from '@mycsuite/ui';
+import { ThemedText, ThemedView, useUITheme } from '@mycsuite/ui';
 import { useAuth } from '@mycsuite/auth';
 import { fetchExercises } from '../../hooks/workouts/useWorkoutManager';
 import { IconSymbol } from '../../components/ui/icon-symbol';
@@ -45,7 +43,7 @@ export default function ExercisesScreen() {
 
   return (
     <ThemedView className="flex-1">
-      <ThemedView className="flex-row items-center justify-between p-4 border-b border-surface dark:border-white/10">
+      <ThemedView className="flex-row items-center justify-between p-4 border-b border-bg-dark dark:border-white/10">
         <TouchableOpacity onPress={() => router.back()} className="p-2">
            <ThemedText type="link">Close</ThemedText>
         </TouchableOpacity>
@@ -55,8 +53,8 @@ export default function ExercisesScreen() {
         </TouchableOpacity> 
       </ThemedView>
       
-      <View className="px-4 py-3 border-b border-surface dark:border-white/10">
-        <View className="flex-row items-center bg-surface dark:bg-surface_dark rounded-lg px-2.5 h-10">
+      <View className="px-4 py-3 border-b border-bg-dark dark:border-white/10">
+        <View className="flex-row items-center bg-bg-default dark:bg-bg-default-dark rounded-lg px-2.5 h-10">
             <IconSymbol name="magnifyingglass" size={20} color={theme.icon || '#888'} />
              <TextInput
                 className="flex-1 ml-2 text-base h-full text-apptext dark:text-apptext_dark"
@@ -84,7 +82,7 @@ export default function ExercisesScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity 
-            className="flex-row items-center justify-between p-4 border-b border-surface dark:border-white/10"
+            className="flex-row items-center justify-between p-4 border-b border-bg-dark dark:border-white/10"
             onPress={() => {
                 router.push({
                     pathname: '/exercises/details',

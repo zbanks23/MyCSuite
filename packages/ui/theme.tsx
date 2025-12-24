@@ -3,12 +3,11 @@ import { createContext, useContext } from 'react';
 export type AppTheme = {
   primary: string;
   accent: string;
-  background: string;
-  backgroundMuted?: string;
-  backgroundDimmed?: string;
+  bgLight: string;
+  bg?: string;
+  bgDark?: string;
   text: string;
   textMuted?: string;
-  surface: string;
   icon?: string;
   tabIconDefault?: string;
   tabIconSelected?: string;
@@ -19,31 +18,29 @@ export type AppTheme = {
 export const lightTheme: AppTheme = {
   primary: 'hsl(8, 100%, 67%)',
   accent: 'hsl(117, 20%, 61%)',
-  background: 'hsl(0, 0%, 100%)',
-  backgroundMuted: 'hsl(359, 75%, 89%)', // surface
-  backgroundDimmed: 'hsl(359, 75%, 89%)',
+  bgLight: 'hsl(0, 0%, 100%)',
+  bg: 'hsl(0, 0%, 95%)', 
+  bgDark: 'hsl(0, 0%, 90%)',
   text: 'hsl(0, 0%, 5%)',
-  textMuted: 'hsl(0, 0%, 5%)', // Using same for now
-  surface: 'hsl(359, 75%, 89%)',
+  textMuted: 'hsl(0, 0%, 30%)', 
   icon: 'hsl(0, 0%, 5%)',
-  tabIconDefault: 'hsl(359, 75%, 89%)',
+  tabIconDefault: 'hsl(0, 0%, 89%)',
   tabIconSelected: 'hsl(8, 100%, 67%)',
   error: 'hsl(0, 84%, 60%)',
 };
 
 export const darkTheme: AppTheme = {
-  primary: 'hsl(5, 100%, 75%)', // primary-dark
-  accent: 'hsl(122, 37%, 74%)', // accent-dark
-  background: 'hsl(0, 18%, 15%)', // background-dark
-  backgroundMuted: 'hsl(0, 17%, 21%)', // surface-dark
-  backgroundDimmed: 'hsl(0, 17%, 21%)',
-  text: 'hsl(0, 100%, 98%)', // apptext-dark
-  textMuted: 'hsl(0, 17%, 21%)', // surface-dark (maybe lighter?)
-  surface: 'hsl(0, 17%, 21%)', // surface-dark
+  primary: 'hsl(5, 100%, 75%)', 
+  accent: 'hsl(122, 37%, 74%)',
+  bgLight: 'hsl(0, 0%, 10%)', 
+  bg: 'hsl(0, 0%, 5%)',
+  bgDark: 'hsl(0, 0%, 0%)',
+  text: 'hsl(0, 100%, 95%)',
+  textMuted: 'hsl(0, 0%, 70%)', 
   icon: 'hsl(0, 100%, 98%)',
   tabIconDefault: 'hsl(0, 17%, 21%)',
   tabIconSelected: 'hsl(5, 100%, 75%)',
-  error: 'hsl(0, 84%, 60%)', // sticking to same red for now or lighter?
+  error: 'hsl(0, 84%, 60%)',
 };
 
 // For backward compatibility if needed, or default export

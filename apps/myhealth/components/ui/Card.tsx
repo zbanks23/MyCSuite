@@ -34,22 +34,11 @@ export function Card({ children, style, className, onPress, activeOpacity = 0.9,
   // Card Content Animation to snap off-screen
   const cardContentStyle = useAnimatedStyle(() => {
       // If we crossed the threshold, push the card completely off screen
-      // The Swipeable already moves it by dragX.
-      // We want final position to be -width (completely gone left).
-      // So we add extra translation: (-width - dragX).
-      // Actually simpler: if dragX < threshold, just set translateX to -width (minus whatever swipeable is doing?)
-      // Wait, Swipeable translates the whole container? No, Swipeable translates the children (LeftActions/Content).
-      // If we modify `Content` style, it compounds.
-      
       const drag = sharedDragX.value;
       if (drag < TRIGGER_THRESHOLD) {
           // Snap away
-          // We want visual position to be roughly -width.
-          // Current pos is `drag`.
-          // We need to shift it further left by `(-width - drag)`.
-          // But purely visual snap is enough.
           return {
-              transform: [{ translateX: -width - drag }] // Should compound to result in -width
+              transform: [{ translateX: -width - drag }]
           };
       }
       return {

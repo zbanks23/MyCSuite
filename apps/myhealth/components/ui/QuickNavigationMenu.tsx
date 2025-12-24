@@ -72,7 +72,7 @@ export function QuickNavigationButton() {
          items={menuItems} 
          icon={activeIcon} 
          menuRadius={120}
-         style={{ backgroundColor: theme.primary }} 
+         style={{ backgroundColor: theme.bgDark }} 
          buttonSize={BUTTON_SIZE}
          onMenuStateChange={handleMenuStateChange}
        />

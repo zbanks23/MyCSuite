@@ -58,21 +58,21 @@ export function WeightLogModal({ visible, onClose, onSave }: WeightLogModalProps
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 className="w-full"
             >
-            <ThemedView className="bg-white dark:bg-zinc-900 rounded-t-3xl p-6 shadow-xl pb-10">
+            <ThemedView className="bg-bg-light dark:bg-bg-light-dark rounded-t-3xl p-6 shadow-xl pb-10">
                 <View className="flex-row justify-between items-center mb-6">
                 <ThemedText className="text-xl font-bold">Log Body Weight</ThemedText>
-                <TouchableOpacity onPress={onClose} className="p-2 bg-gray-100 dark:bg-zinc-800 rounded-full">
+                <TouchableOpacity onPress={onClose} className="p-2 bg-bg-dark dark:bg-bg-dark-dark rounded-full">
                     <IconSymbol name="xmark" size={16} color={theme.text} />
                 </TouchableOpacity>
                 </View>
 
                 <View className="mb-6">
-                    <Text className="text-sm text-gray-500 mb-2 font-medium">DATE</Text>
+                    <Text className="text-sm text-apptext-muted dark:text-apptext-muted-dark mb-2 font-medium">DATE</Text>
                     <TouchableOpacity 
                         onPress={() => setShowDatePicker(true)}
-                        className="flex-row items-center justify-between p-4 bg-gray-50 dark:bg-zinc-800/50 rounded-xl"
+                        className="flex-row items-center justify-between p-4 bg-bg-default dark:bg-bg-default-dark rounded-xl"
                     >
-                        <Text className="text-lg text-black dark:text-white">
+                        <Text className="text-lg text-apptext dark:text-apptext-dark">
                             {formatDate(date)}
                         </Text>
                         <IconSymbol name="calendar" size={18} color={theme.primary} />
@@ -102,9 +102,9 @@ export function WeightLogModal({ visible, onClose, onSave }: WeightLogModalProps
                 </View>
 
                 <View className="mb-6">
-                    <Text className="text-sm text-gray-500 mb-2 font-medium">WEIGHT (LBS)</Text>
+                    <Text className="text-sm text-apptext-muted dark:text-apptext-muted-dark mb-2 font-medium">WEIGHT (LBS)</Text>
                     <TextInput
-                        className="text-4xl font-bold text-center py-4 bg-gray-50 dark:bg-zinc-800/50 rounded-xl text-black dark:text-white"
+                        className="text-4xl font-bold text-center py-4 bg-bg-default dark:bg-bg-default-dark rounded-xl text-apptext dark:text-apptext-dark"
                         value={weight}
                         onChangeText={(text) => {
                           if (text === '' || /^\d*\.?\d{0,2}$/.test(text)) {

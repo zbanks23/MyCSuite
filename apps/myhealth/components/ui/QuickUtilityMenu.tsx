@@ -168,7 +168,7 @@ export function QuickUtilityButton() {
          menuRadius={120}
          startAngle={0}
          endAngle={-90}
-         style={{ backgroundColor: theme.surface }}
+         style={{ backgroundColor: theme.bgDark }}
          buttonSize={BUTTON_SIZE}
          onMenuStateChange={handleMenuStateChange}
        />

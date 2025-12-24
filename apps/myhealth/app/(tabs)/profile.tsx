@@ -282,7 +282,7 @@ export default function ProfileScreen() {
         selectedRange={selectedRange}
         onRangeChange={setSelectedRange}
         primaryColor={theme.primary}
-        textColor={theme.placeholder}
+        textColor={theme.textMuted}
       />
 
       <WeightLogModal
