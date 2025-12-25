@@ -4,6 +4,7 @@ import { ActiveRoutineHeader } from './ActiveRoutineHeader';
 import { ActiveRoutineCompletion } from './ActiveRoutineCompletion';
 import { ActiveRoutineTimelineItem } from './ActiveRoutineTimelineItem';
 import { SegmentedControl, SegmentedControlOption } from '../ui/SegmentedControl';
+import { HollowedCard } from '../ui/HollowedCard';
 
 type ViewMode = 'next_3' | 'next_7' | 'week';
 
@@ -56,8 +57,8 @@ export function ActiveRoutineCard({
         onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
         onClearRoutine={onClearRoutine}
       />
-
-      <View className="bg-light-lighter dark:bg-border-dark rounded-xl p-4 border border-black/5 dark:border-white/10">
+      
+      <HollowedCard className="p-4">
         {timelineDays.length === 0 ? (
           <ActiveRoutineCompletion onClearRoutine={onClearRoutine} />
         ) : (
@@ -88,7 +89,7 @@ export function ActiveRoutineCard({
             ))}
           </View>
         )}
-      </View>
+      </HollowedCard>
     </View>
   );
 }

@@ -18,6 +18,7 @@ import { ActiveRoutineCard } from '../../components/routines/ActiveRoutineCard';
 import { SavedWorkoutItem } from '../../components/workouts/SavedWorkoutItem';
 import { WorkoutPreviewModal } from '../../components/workouts/WorkoutPreviewModal';
 import { useRoutineTimeline } from '../../hooks/routines/useRoutineTimeline';
+import { HollowedCard } from '../../components/ui/HollowedCard';
 
 import { SavedWorkout, Routine } from '../../types';
 import { ScreenHeader } from '../../components/ui/ScreenHeader';
@@ -251,7 +252,7 @@ export default function Workout() {
                                 <View className="flex-row justify-between items-center mb-3">
                                     <Text className="text-lg font-semibold mb-2 text-light dark:text-dark">Active Routine</Text>
                                 </View>
-                                <View className="bg-light-lighter dark:bg-border-dark rounded-xl p-4 border border-black/5 dark:border-white/10">
+                                <HollowedCard className="p-4">
                                     <View className="p-5 items-center">
                                         <Text className="text-base font-semibold text-light dark:text-dark mb-2">
                                             No active routine
@@ -263,7 +264,7 @@ export default function Workout() {
                                             <Text className="text-white font-semibold">Choose Routine</Text>
                                         </TouchableOpacity>
                                     </View>
-                                </View>
+                                </HollowedCard>
                             </View>
                         )}
                     </View>
