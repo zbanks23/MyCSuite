@@ -4,7 +4,7 @@ import { ActiveRoutineHeader } from './ActiveRoutineHeader';
 import { ActiveRoutineCompletion } from './ActiveRoutineCompletion';
 import { ActiveRoutineTimelineItem } from './ActiveRoutineTimelineItem';
 import { SegmentedControl, SegmentedControlOption } from '../ui/SegmentedControl';
-import { HollowedCard } from '../ui/HollowedCard';
+import { RaisedCard } from '../ui/RaisedCard';
 
 type ViewMode = 'next_3' | 'next_7' | 'week';
 
@@ -58,7 +58,7 @@ export function ActiveRoutineCard({
         onClearRoutine={onClearRoutine}
       />
       
-      <HollowedCard className="p-4">
+      <RaisedCard className="p-4">
         {timelineDays.length === 0 ? (
           <ActiveRoutineCompletion onClearRoutine={onClearRoutine} />
         ) : (
@@ -89,7 +89,7 @@ export function ActiveRoutineCard({
             ))}
           </View>
         )}
-      </HollowedCard>
+      </RaisedCard>
     </View>
   );
 }
