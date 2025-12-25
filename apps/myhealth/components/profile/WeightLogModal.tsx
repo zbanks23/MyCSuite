@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { SharedButton, useUITheme } from '@mysuite/ui';
+import { RaisedButton, useUITheme } from '@mysuite/ui';
 import { IconSymbol } from '../ui/icon-symbol';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -118,7 +118,7 @@ export function WeightLogModal({ visible, onClose, onSave }: WeightLogModalProps
                     />
                 </View>
 
-                <SharedButton 
+                <RaisedButton 
                     title="Save Entry" 
                     onPress={handleSave} 
                     disabled={!weight}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View, TextInput, Text } from 'react-native';
 import { supabase } from '@mysuite/auth';
-import { SharedButton } from '@mysuite/ui';
+import { RaisedButton } from '@mysuite/ui';
 
 export default function AuthScreen() {
   const [email, setEmail] = useState('');
@@ -82,8 +82,8 @@ export default function AuthScreen() {
           {status.message ?? (status.type === 'typing' ? 'Typing...' : '')}
         </Text>
       )}
-      <SharedButton title="Sign In" onPress={handleSignIn} />
-      <SharedButton title="Sign Up" onPress={handleSignUp} />
+      <RaisedButton title="Sign In" onPress={handleSignIn} />
+      <RaisedButton title="Sign Up" onPress={handleSignUp} />
     </View>
   );
 }

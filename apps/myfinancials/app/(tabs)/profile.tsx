@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { View, TextInput, Alert, StyleSheet } from 'react-native';
 import { useAuth, supabase } from '@mysuite/auth';
-import { SharedButton } from '@mysuite/ui';
+import { RaisedButton } from '@mysuite/ui';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import { useUITheme } from '@mysuite/ui';
 
@@ -69,8 +69,8 @@ export default function ProfileScreen() {
         value={fullName}
         onChangeText={setFullName}
       />
-      <SharedButton title="Update Profile" onPress={handleUpdateProfile} />
-      <SharedButton title="Sign Out" onPress={handleSignOut} />
+      <RaisedButton title="Update Profile" onPress={handleUpdateProfile} />
+      <RaisedButton title="Sign Out" onPress={handleSignOut} />
     </View>
   );
 }
