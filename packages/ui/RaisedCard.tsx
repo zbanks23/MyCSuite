@@ -24,7 +24,7 @@ export function RaisedCard({ children, style, className, onPress, activeOpacity 
   const { width } = useWindowDimensions();
   const theme = useUITheme();
   // Refined Neumorphic RaisedCard: matches background, uses highlight top-border and soft bottom shadow
-  const baseClassName = `bg-light dark:bg-dark-darker rounded-xl p-3 w-full mb-1 border border-light dark:border-dark border-t-highlight dark:border-t-highlight-dark border-l-highlight dark:border-l-highlight-dark ${className || ''}`;
+  const baseClassName = `bg-light-darker dark:bg-dark-darker rounded-xl p-3 w-full mb-1 border border-light dark:border-dark border-t-highlight dark:border-t-highlight-dark border-l-highlight dark:border-l-highlight-dark ${className || ''}`;
   const shadowStyle = { 
       shadowColor: '#000',
       shadowOffset: { width: 2, height: 4 }, 
@@ -68,7 +68,7 @@ export function RaisedCard({ children, style, className, onPress, activeOpacity 
           : ['hsla(0, 0%, 100%, 0.7)', 'hsla(0, 0%, 90%, 0.05)']}
         locations={[0, 1]}
         start={{ x: 0, y: 0 }}
-        end={{ x: 0.2, y: 1 }} // Steep vector to create diagonal look on wide cards
+        end={{ x: 0.4, y: 4 }} // Steep vector to create diagonal look on wide cards
         style={{
             position: 'absolute',
             top: 0,

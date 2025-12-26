@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { ActiveRoutineHeader } from './ActiveRoutineHeader';
 import { ActiveRoutineCompletion } from './ActiveRoutineCompletion';
 import { ActiveRoutineTimelineItem } from './ActiveRoutineTimelineItem';
 import { SegmentedControl, SegmentedControlOption } from '../ui/SegmentedControl';
-import { RaisedCard } from '@mysuite/ui';
+import { RaisedCard, useUITheme } from '@mysuite/ui';
+import { IconSymbol } from '../ui/icon-symbol';
 
 type ViewMode = 'next_3' | 'next_7' | 'week';
 
@@ -45,6 +46,7 @@ export function ActiveRoutineCard({
   viewMode,
   onViewModeChange,
 }: ActiveRoutineCardProps) {
+  const theme = useUITheme();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const daysToShow = isCollapsed ? timelineDays.slice(0, 1) : timelineDays;
@@ -53,8 +55,6 @@ export function ActiveRoutineCard({
     <View className="mb-6">
       <ActiveRoutineHeader
         routineName={activeRoutineObj.name}
-        isCollapsed={isCollapsed}
-        onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
         onClearRoutine={onClearRoutine}
       />
       
@@ -63,12 +63,22 @@ export function ActiveRoutineCard({
           <ActiveRoutineCompletion onClearRoutine={onClearRoutine} />
         ) : (
           <View className="py-2">
-            <View className="flex-row justify-end items-center mb-4 px-1">
+            <View className="flex-row justify-end items-center mb-4 px-1 gap-2">
               <SegmentedControl
                 options={VIEW_MODE_OPTIONS}
                 value={viewMode}
                 onChange={onViewModeChange}
               />
+              <TouchableOpacity
+                onPress={() => setIsCollapsed(!isCollapsed)}
+                className="p-2 bg-light dark:bg-dark rounded-xl h-[28px] w-[28px] items-center justify-center"
+              >
+                <IconSymbol
+                  name={isCollapsed ? "chevron.down" : "chevron.up"}
+                  size={16}
+                  color={theme.primary}
+                />
+              </TouchableOpacity>
             </View>
             {daysToShow.map((item: any, index: number) => (
               <ActiveRoutineTimelineItem

@@ -131,13 +131,13 @@ export function ActiveRoutineTimelineItem({
 
             <View className="items-end w-[75px]">
               {item.date && !isToday && (
-                <Text className="text-xs text-gray-500 mb-0.5 text-right" numberOfLines={1}>
+                <Text className="text-xs text-light-muted dark:text-dark-muted mb-0.5 text-right" numberOfLines={1}>
                   {item.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                 </Text>
               )}
               {isToday && !isCompletedToday && (
-                <View className="bg-light-lighter px-2 py-0.5 rounded">
-                  <Text className="text-[10px] text-black font-bold">
+                <View className="px-2 py-0.5 rounded">
+                  <Text className="text-xs text-light-muted dark:text-dark-muted font-bold">
                     TODAY
                   </Text>
                 </View>
