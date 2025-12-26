@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { useAuth, supabase } from '@mysuite/auth';
-import { useUITheme } from '@mysuite/ui';
+import { useUITheme, RaisedButton } from '@mysuite/ui';
 import { IconSymbol } from '../../components/ui/icon-symbol';
 import { ThemeToggle } from '../../components/ui/ThemeToggle';
 import { ScreenHeader } from '../../components/ui/ScreenHeader';
@@ -136,13 +136,18 @@ export default function SettingsScreen() {
         </View>
 
         <View className="mb-6">
-          <TouchableOpacity className="p-4 items-center border-b border-light dark:border-dark" onPress={handleSignOut}>
-            <Text className="text-base font-semibold text-primary dark:text-primary-dark">Sign Out</Text>
-          </TouchableOpacity>
+          <RaisedButton 
+            title="Sign Out" 
+            onPress={handleSignOut} 
+            className="mb-4"
+          />
           
-          <TouchableOpacity className="mt-2 text-center items-center p-4" onPress={handleDeleteAccount}>
-            <Text className="text-base font-semibold text-red-500">Delete Account</Text>
-          </TouchableOpacity>
+          <RaisedButton 
+            title="Delete Account" 
+            onPress={handleDeleteAccount} 
+            className="bg-red-50 dark:bg-red-900/20"
+            textClassName="text-red-500 font-bold text-lg"
+          />
         </View>
         
         <Text className="text-center text-xs text-gray-500 mt-6">Version 1.0.0</Text>
