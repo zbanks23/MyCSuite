@@ -17,9 +17,12 @@ interface ActionCardProps extends ViewProps {
   activeOpacity?: number;
   onDelete?: () => void;
   onEdit?: () => void;
+  swipeGroupId?: string;
+  activeSwipeId?: string | null;
+  onSwipeStart?: (id: string) => void;
 }
 
-export function ActionCard({ children, style, className, onPress, activeOpacity = 0.9, onDelete, onEdit, ...props }: ActionCardProps) {
+export function ActionCard({ children, style, className, onPress, activeOpacity = 0.9, onDelete, onEdit, swipeGroupId, activeSwipeId, onSwipeStart, ...props }: ActionCardProps) {
   const { width } = useWindowDimensions();
   
   // Flat ActionCard: Simple background, border, no heavy neumorphic shadows
@@ -55,6 +58,12 @@ export function ActionCard({ children, style, className, onPress, activeOpacity 
   const setReadyToDelete = (ready: boolean) => {
       shouldDelete.current = ready;
   };
+
+  React.useEffect(() => {
+    if (activeSwipeId && swipeGroupId && activeSwipeId !== swipeGroupId) {
+        swipeableRef.current?.close();
+    }
+  }, [activeSwipeId, swipeGroupId]);
 
   // Card Content Animation to snap off-screen
   const cardContentStyle = useAnimatedStyle(() => {
@@ -131,6 +140,9 @@ export function ActionCard({ children, style, className, onPress, activeOpacity 
             friction={2}
             rightThreshold={40}
             onSwipeableWillOpen={() => {
+                if (onSwipeStart && swipeGroupId) {
+                    onSwipeStart(swipeGroupId);
+                }
                 // Trigger delete ONLY if we dragged past the deep threshold
                 if (shouldDelete.current) {
                     swipeableRef.current?.close();

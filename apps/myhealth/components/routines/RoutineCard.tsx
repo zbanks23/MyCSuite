@@ -14,9 +14,12 @@ interface RoutineCardProps {
   onLongPress?: () => void;
   onDelete?: () => void;
   onEdit?: () => void;
+  swipeGroupId?: string;
+  activeSwipeId?: string | null;
+  onSwipeStart?: (id: string) => void;
 }
 
-export function RoutineCard({ routine, onPress, onLongPress, onDelete, onEdit }: RoutineCardProps) {
+export function RoutineCard({ routine, onPress, onLongPress, onDelete, onEdit, swipeGroupId, activeSwipeId, onSwipeStart }: RoutineCardProps) {
   const workoutCount = routine.sequence.filter((s) => s.type === 'workout').length;
   const totalDays = routine.sequence.length;
 
@@ -25,6 +28,9 @@ export function RoutineCard({ routine, onPress, onLongPress, onDelete, onEdit }:
         onPress={onPress} 
         onDelete={onDelete} 
         onEdit={onEdit}
+        swipeGroupId={swipeGroupId}
+        activeSwipeId={activeSwipeId}
+        onSwipeStart={onSwipeStart}
         className="p-0 mb-0"
         activeOpacity={0.9}
     >

@@ -69,6 +69,7 @@ export default function Workout() {
 
     const [previewWorkout, setPreviewWorkout] = useState<SavedWorkout | null>(null);
     const [routineViewMode, setRoutineViewMode] = useState<'next_3' | 'next_7' | 'week'>('week');
+    const [activeSwipedCardId, setActiveSwipedCardId] = useState<string | null>(null);
 
     const { 
         savedWorkouts, 
@@ -230,6 +231,9 @@ export default function Workout() {
                                         onEdit={() => handleEditSavedWorkout(item)}
                                         onStart={() => handleStartSavedWorkout(item)}
                                         onDelete={() => deleteSavedWorkout(item.id, { skipConfirmation: true })}
+                                        swipeGroupId={item.id}
+                                        activeSwipeId={activeSwipedCardId}
+                                        onSwipeStart={setActiveSwipedCardId}
                                     />
                                 )}
                             />
@@ -351,6 +355,9 @@ export default function Workout() {
                                             onPress={() => startActiveRoutine(item.id)}
                                             onEdit={() => handleEditRoutine(item)}
                                             onDelete={() => deleteRoutine(item.id)}
+                                            swipeGroupId={item.id}
+                                            activeSwipeId={activeSwipedCardId}
+                                            onSwipeStart={setActiveSwipedCardId}
                                         />
                                     )}
                                 />

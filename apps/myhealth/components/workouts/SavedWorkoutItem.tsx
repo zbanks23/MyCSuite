@@ -11,13 +11,19 @@ interface SavedWorkoutItemProps {
     onEdit: () => void;
     onStart: () => void;
     onDelete: () => void;
+    swipeGroupId?: string;
+    activeSwipeId?: string | null;
+    onSwipeStart?: (id: string) => void;
 }
 
 export const SavedWorkoutItem = ({ 
     item, 
     onEdit, 
     onStart,
-    onDelete 
+    onDelete,
+    swipeGroupId,
+    activeSwipeId,
+    onSwipeStart
 }: SavedWorkoutItemProps) => {
     const theme = useUITheme();
     return (
@@ -26,6 +32,9 @@ export const SavedWorkoutItem = ({
             className="p-0 mb-0"
             onDelete={onDelete}
             onEdit={onEdit}
+            swipeGroupId={swipeGroupId}
+            activeSwipeId={activeSwipeId}
+            onSwipeStart={onSwipeStart}
         >
             <View className="flex-row justify-between items-center">
                 <View className="flex-row items-center flex-1 mr-2">
